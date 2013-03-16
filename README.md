@@ -28,6 +28,9 @@ For LibCGI:
 
 Install HaarpViewer:
 
+	cd /usr/src/
+	git clone https://github.com/keikurono/haarp-ext-js-viewer.git
+	cd haarp-ext-js-viewer
 	cd src/
 	make
 	make install
