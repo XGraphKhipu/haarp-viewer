@@ -43,3 +43,11 @@ Access:
 	
 	http://<ip_server>/cgi-bin/haarp.cgi
 
+
+![Hviewer](http://img831.imageshack.us/img831/4756/haarpviewer2.png)
+
+If you find this code useful, or wish to fund further development,
+you can use PayPal to donate to the Haarp-Ext-Js-Viewer project:
+
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QYCCSYYGW52QU"><br>
+<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"></a>
