@@ -41,6 +41,7 @@ Install HaarpViewer:
 	cp -r images /var/www/
 	touch /var/log/haarp/webaccess.log
 	chown www-data:www-data /var/log/haarp/webaccess.log
+	echo "ACCESSWEBLOG /var/log/haarp/webaccess.log" >> /etc/haarp/haarp.conf
 
 Access:
 	
