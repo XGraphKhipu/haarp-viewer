@@ -32,6 +32,14 @@ Install HaarpViewer:
 	make
 	make install
 
+	cd ..
+	cp src/*.cgi /usr/lib/cgi-bin/
+	cp hc.html /var/www/
+	cp -r images /var/www/
 	touch /var/log/haarp/webaccess.log
 	chown www-data:www-data /var/log/haarp/webaccess.log
+
+Access:
+	
+	http://<ip_server>/cgi-bin/haarp.cgi
 
