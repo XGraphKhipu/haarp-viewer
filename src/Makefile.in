@@ -1,0 +1,29 @@
+CPP = @CPP@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+DEFINES = @DEFS@
+INSTALL = ../install-sh
+
+P = -Wall -lcgi -lmysqlclient -ldl 
+
+prefix = @prefix@
+exec_prefix = $(prefix)
+sbindir = @sbindir@
+sysconfdir = @sysconfdir@
+localstatedir = @localstatedir@
+
+OBJECTS = logfile.o report.o utils.o
+
+all: report main
+
+report: $(OBJECTS)
+	$(CPP) $(OBJECT) $(P) -o report.cgi
+
+main: haarp.c 
+	$(CPP) haarp.c $(P) -o haarp.cgi 
+
+%.o: %.c %.h
+	$(CPP) $(P) -c -o $@ $<
+
+clean:
+	rm -f *.cgi *.o

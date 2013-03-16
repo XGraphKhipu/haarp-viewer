@@ -1,0 +1,438 @@
+<html>
+	<head>
+		<meta name="Generator" content="HaarpCache View v1.0 - Copyright (C) 2011 - 2012. All rights reserved." />
+		<title>HaarpV2</title>
+		<link rel="stylesheet" type="text/css" href="../ext/resources/css/ext-all.css">
+		<link rel="stylesheet" type="text/css" href="../ext/resources/css/xtheme-gray.css">
+		<script type="text/javascript"  src="../ext/adapter/ext/ext-base.js"></script>	
+		<script type="text/javascript"  src="../ext/ext-all.js"></script>	
+
+		<script type="text/javascript" src="../ext/src/locale/ext-lang-es.js"></script>
+		<style>
+			.x-grid3-row-over {
+				background-image: none; 
+			}
+			body {
+				padding: 13px;
+				background-color: #FFFFFF;
+				background-image: url(../images/back_general.gif););
+				background-repeat: repeat-x;
+			}
+
+			.x-panel-mc {
+				font-size: 12px;
+				line-height: 18px;
+			}
+			.x-grid3-hd-row td, .x-grid3-row td, .x-grid3-summary-row td {
+				font-size: 14px;font-style:normal;
+			}
+			.x-grid3-dirty-cell {
+				background-image:none;
+			}
+			.reload{
+				background: url(../images/action_refresh.gif) 0px 0px no-repeat !important;
+			}
+			.reports{		
+				background: url(../images/chart.png) 0px 3px no-repeat !important;
+			}
+			.down1{
+				background: url(../images/down2.png) 0px 0px no-repeat !important;
+			}
+			.up1{
+				background: url(../images/up2.png) 0px 0px no-repeat !important;
+			}
+		</style>
+		<script>
+			Ext.onReady(function(){
+				//Ext.get("div1").center();
+				var DIAMS = 24*60*60*1000;
+				function getFecha(date){
+					return (new Date(date)).format("Y-m-d");
+				}
+				showIcon = function(data, metadata, record){
+					var str = record.get("domain");
+					return "<img src='../images/" + str.replace(".","_") + ".jpg' width=11 height=11/> " + str;
+				}
+				function ClassHistory(hmin,hmax,data){
+					this.min = hmin;
+					this.max = hmax;
+					this.data = data;
+					this.updateH = function(store,start,fecha){
+						store.load({
+						params: {
+								start : start, 
+								data: this.data,
+								fecha: fecha.format("Y-m-d")
+							}
+						});					
+					}				
+				}
+				histo_users = new ClassHistory();
+				histo_ts    = new ClassHistory();
+				var storeTS = new Ext.data.JsonStore({
+					url: "report.cgi",
+					baseParams: {start: 1},
+					root: "data",
+					autoLoad: true,
+					fields: ['domain','files','size','eco','hits','porc', {name: 'active', type:'int'}]
+				});
+				gridTs = new Ext.grid.GridPanel({
+					store: storeTS,
+					region: 'center',
+					loadMask: true,
+					stripeRows: true,
+					colModel: new Ext.grid.ColumnModel({
+						defaults:{
+							sortable: false,
+							align: 'right'
+						},
+						columns: [
+							new Ext.grid.RowNumberer(),
+							{header: "Domain", width: 40, dataIndex: 'domain', align: 'left', renderer: showIcon},
+							{header: "Files", width: 20, dataIndex: 'files', align: 'right', renderer: Ext.util.Format.numberRenderer('0,0')},
+							{header: "Sie", width: 36, dataIndex: 'size',
+								renderer: function(r){ 
+										var num = Math.pow(10,9);																										
+										if(r<num)
+											return Ext.util.Format.fileSize(r);
+										else
+										{
+											var num1 = num*1000;
+											if(r<num1)
+												return (r/num).toFixed(2) + ' GB';
+											else
+												return (r/num1).toFixed(2) + ' TB';
+										}
+									}
+							},
+							{header: "Economia", width: 36, dataIndex: 'eco', 
+									renderer: function(r){ 
+										var num = Math.pow(10,9);
+										if(r<num)
+											if( r > num/1000)
+												return Ext.util.Format.fileSize(r);
+											else
+												return (r/1000).toFixed(2) + " KB";
+										else
+										{
+											var num1 = num*1000;
+											if(r<num1)
+												return (r/num).toFixed(2) + ' GB';
+											else
+												return (r/num1).toFixed(2) + ' TB';
+										}
+									}
+							},
+							{header: "Hits", width: 26, dataIndex: 'hits', renderer: Ext.util.Format.numberRenderer('0,0')},
+							{header: "Eficiencia %", width: 36, dataIndex: 'porc', align: 'right', renderer: function(r){return Ext.util.Format.number(r,'0,000.00')+' %';}},
+							{header: "Active", width: 10, dataIndex: 'active', align: 'center', /*sortable: true,*/
+									renderer: function(r){
+											if(!r)
+												return "<img src='../images/cancel.png' width=13 height=13>";
+											return '<img src="../images/accept.png" width=13 height=13>';
+									}
+							}
+						]
+					}),
+					viewConfig: {
+						forceFit: true,
+						autoFill: true
+					},
+					tbar: [ '-',
+						{
+							text: 'Actualizar',
+							iconCls: 'reload',
+							handler: function(){
+								storeTS.load();
+							}
+						},'-'
+					],
+					listeners: {
+						"rowdblclick": function(g,rowIndex,e){
+							var domain = (g.getStore()).getAt(rowIndex).get("domain");
+							tabSouth_ts.expand(true);											
+							var histCmp = Ext.getCmp("dateHis_ts");
+							var titleHis = Ext.getCmp("title_his_ts");
+							titleHis.setTitle(domain);
+							
+							histo_ts.data = domain;	
+							Ext.Ajax.request({
+								url : 'report.cgi',
+								params:{start : 2, domain: domain},
+								method: 'POST',
+								success: function(res,opt){
+									var r = Ext.util.JSON.decode(res.responseText);
+									if(!r.success)
+									{
+										Ext.Msg.alert("Error!",r.errors);
+										return; 
+									}
+									if(r.min=='(null)' || r.max=='(null)')												
+									{														
+										histCmp.setMinValue("2010-01-02 00:00:00");
+										histCmp.setMaxValue("2010-01-01 00:00:00");
+										histCmp.setDisabled(true);
+										Ext.getCmp("button_atr_ts").setDisabled(true);
+										Ext.getCmp("button_sig_ts").setDisabled(true);
+										Ext.getCmp("panel_history_ts").setVisible(false);
+										
+										Ext.getCmp("cache_id").setText("");
+										Ext.getCmp("hits_id").setText("");
+										
+										Ext.getCmp("cache_id").setDisabled(true);
+										Ext.getCmp("hits_id").setDisabled(true);
+									}
+									else{
+										Ext.getCmp("cache_id").setDisabled(false);
+										Ext.getCmp("hits_id").setDisabled(false);
+										
+										Ext.getCmp("panel_history_ts").setVisible(true);
+										histCmp.setDisabled(false);
+										
+										histCmp.setMinValue(r.min);
+										histCmp.setMaxValue(r.max);
+										
+										r.min = r.min+" 00:00:00";
+										r.max = r.max+" 00:00:00";
+										
+										histo_ts.min = new Date(r.min);
+										histo_ts.max = new Date(r.max);
+										
+										var calenVal = new Date(histCmp.getValue()*1); 
+										if(histo_ts.min*1 <= calenVal*1 && histo_ts.max*1 >= calenVal*1)
+										{
+											histo_ts.updateH(storeHis_ts, 3, histCmp.getValue());
+										}
+										else
+											histCmp.setValue(histo_ts.max);
+										histo_ts.updateH(storeHis_ts, 3, histCmp.getValue());
+										calenVal = new Date(histCmp.getValue()*1); 
+										if( histo_ts.max*1 <= calenVal*1 )
+											(Ext.getCmp("button_sig_ts")).setDisabled(true);
+										else
+											(Ext.getCmp("button_sig_ts")).setDisabled(false);
+										if( calenVal*1 <= histo_ts.min*1 )
+											(Ext.getCmp("button_atr_ts")).setDisabled(true);
+										else
+											(Ext.getCmp("button_atr_ts")).setDisabled(false);																												
+									}
+								}
+							});
+						}
+					}
+					
+				});
+				var totalCache = 0;
+				var totalHits = 0;
+				storeHis_ts = new Ext.data.JsonStore({
+					url: "report.cgi",
+					params: {start : 3 },
+					root: "data",
+					fields: ['domain',{name: 'cache', type: 'int'},{name: 'hits', type:'int'}, 'date']
+				});
+				storeHis_ts.on("load",function(){
+					totalCache = 0;
+					totalHits = 0;
+					storeHis_ts.each(function(r){
+							totalCache += r.get("cache");
+							totalHits += r.get("hits");
+						});
+					Ext.getCmp("cache_id").setText(totalCache.toString());
+					Ext.getCmp("hits_id").setText(totalHits.toString());
+				});								
+
+				tabSouth_ts = new Ext.TabPanel({
+					region: 'south',
+					split: true,									
+					collapseMode: 'mini',
+					height: 340,
+					activeTab: 0,
+					collapsed: true,
+					items: [
+						{
+							xtype: 'panel',
+							title: 'TS-db',
+							iconCls: 'Reports',
+							layout: 'anchor',
+							id: 'title_his_ts',
+							items: [
+								{
+									xtype: 'toolbar',
+									items: ['-',
+										{
+											xtype: 'button',
+											disabled: true,									
+											id: 'cache_id',
+											iconCls: "down1"
+										},
+										{
+											xtype: 'button',
+											disabled: true,															
+											id: 'hits_id',
+											iconCls: "up1"
+										},'-',
+										{
+											xtype: 'tbfill'
+										},
+										{
+											xtype: 'button',
+											id: 'button_atr_ts',
+											disabled: false,
+											text: '<< D&iacute;a Anterior',
+											handler: function(b,e){
+												var calen = Ext.getCmp('dateHis_ts');
+												var calenValr1 = new Date(calen.getValue()*1-DIAMS);
+												if(calenValr1*1 <= histo_ts.min*1)
+													b.setDisabled(true);
+												Ext.getCmp("button_sig_ts").setDisabled(false);
+												histo_ts.updateH(storeHis_ts, 3, calenValr1);
+												calen.setValue(getFecha(calenValr1));
+											}
+										},
+										{
+											xtype: 'datefield',
+											id: 'dateHis_ts',
+											format: 'Y-m-d',
+											value: getFecha(new Date()),
+											listeners: {
+												"select": function(t,data){
+													histo_ts.updateH(storeHis_ts, 3, data);
+													var calVal = t.getValue();
+													if( histo_ts.max*1 <= calVal*1 )
+														(Ext.getCmp("button_sig_ts")).setDisabled(true);
+													else
+														(Ext.getCmp("button_sig_ts")).setDisabled(false);
+													if( calVal*1 <= histo_ts.min*1 )
+														(Ext.getCmp("button_atr_ts")).setDisabled(true);
+													else
+														(Ext.getCmp("button_atr_ts")).setDisabled(false);
+												}
+											}
+										},
+										{
+											xtype: 'button',
+											id: 'button_sig_ts',
+											text: 'D&iacute;a Siguiente >>',
+											handler: function(b){
+												var calen = Ext.getCmp('dateHis_ts');
+												var calVals1 = new Date(calen.getValue()*1 + DIAMS);
+												if( histo_ts.max*1 <= calVals1*1 )
+													b.setDisabled(true);
+												Ext.getCmp("button_atr_ts").setDisabled(false);
+												histo_ts.updateH(storeHis_ts, 3, calVals1);
+												calen.setValue(getFecha(calVals1));
+											}
+										}
+									]
+								},
+								{
+									xtype: 'columnchart',
+									loadMask: true,
+									anchor: '100% 90%',
+									store: storeHis_ts,
+									frame: true,
+									url:'../ext/resources/charts.swf',
+									title: 'Cache',
+									id: 'panel_history_ts',
+									xField: 'date',
+									yField: 'cache',
+									tipRenderer : function(chart, record, index, series){														
+										if(series.yField == 'cache'){
+											return record.data.cache+' Archivos';
+										}
+										else{
+											return record.data.hits + ' Despachados';
+										}
+									},
+									chartStyle: {
+										animationEnabled: true,
+										background: {color: 0xdae7f6, alpha: 0.1},
+										font: {
+											name: 'Tahoma',
+											color: 0x000000,
+											size: 10
+										},
+										xAxis: {
+											color: 0x69aBc8,
+											majorTicks: {color: 0xff0000, length: 4},
+											minorTicks: {color: 0xff0000, length: 2},
+											majorGridLines: {size: 1, color: 0x6dafcc},
+											labelRotation: -40
+										},
+										yAxis: {
+											color: 0x69aBc8,
+											majorTicks: {color: 0x69aBc8, length: 4},
+											minorTicks: {color: 0x69aBc8, length: 2},
+											majorGridLines: {size: 1, color: 0x6dafcc}
+										},
+										dataTip: {
+											padding: 5,
+											border: {
+												color: 0x99bbe8,
+												size:1
+											},
+											background: {
+												color: 0xDAE7F6,
+												alpha: .9
+											},
+											font: {
+												name: 'Tahoma',
+												color: 0x15428B,
+												size: 10,
+												bold: true
+											}
+										}
+									},
+									series: [
+										{
+											type: 'column',
+											yField: 'cache',
+											style: {
+												padding: 100,
+												mode: 'stretch', 
+												color: 0x2389C6
+											}
+										},
+										{
+											type: 'column',
+											yField: 'hits',
+											style: {
+												color : 0xFF0000
+											}	
+										}
+									]
+								}
+							]
+						}
+					]
+				});
+				panel_grid_ts = new Ext.Panel({
+					renderTo: "div1",
+					width: 860,
+					height: 740,
+					title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555">HAARPCACHE - VIEW</h1></td></tr></center>',
+					border: false,
+					layout: 'border',
+					items:[
+						gridTs,
+						tabSouth_ts
+					]
+				});
+			});
+
+		</script>
+	</head>
+	<body>
+		 <center>
+	<table>
+			<tr><td align="left"><h1 style="color:#000000"></h1</td></tr>
+			<tr>
+				<br/>
+				<br/>
+				<td><div id="div1"></div></td>
+			</tr>
+	</table>
+		</center>
+
+	</body>
+</html>

@@ -1,0 +1,9 @@
+
+Instalation:
+
+cd src/
+make
+make install
+
+touch /var/log/haarp/accessweb.log
+
