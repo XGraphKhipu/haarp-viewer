@@ -36,7 +36,6 @@ Install HaarpViewer:
 	cd haarp-ext-js-viewer
 	cd src/
 	make
-	make install
 
 	cd ..
 	cp src/*.cgi /usr/lib/cgi-bin/
