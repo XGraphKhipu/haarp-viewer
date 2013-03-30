@@ -22,7 +22,6 @@ For LibCGI:
 	#install autoconf
 	#for derivatives debian:
 	apt-get install autoconf
-	
 	git clone https://github.com/keikurono/libcgi.git
 	cd libcgi
 	./autogen.sh
