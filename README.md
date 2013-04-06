@@ -10,6 +10,7 @@ Instalation
 Need to install ExtJs and LibCGI
 
 For ExtJs:
+
 	#installing unzip
 	apt-get install unzip
 	cd /var/www/
