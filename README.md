@@ -4,7 +4,7 @@ haarp-ext-js-viewer
 A viewer made ​​in Ext Js for HaarpCache
 
 
-Instalation
+Installation
 ===================
 
 Need to install ExtJs and LibCGI
