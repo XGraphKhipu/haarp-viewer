@@ -24,7 +24,7 @@ For LibCGI:
 	#install autoconf
 	#for derivatives debian:
 	apt-get install autoconf
-	git clone https://github.com/keikurono/libcgi.git
+	git clone git://github.com/keikurono/libcgi.git
 	cd libcgi
 	./autogen.sh
 	./configure --prefix=/usr
@@ -34,7 +34,7 @@ For LibCGI:
 Install HaarpViewer:
 
 	cd /usr/src/
-	git clone https://github.com/keikurono/haarp-ext-js-viewer.git
+	git clone git://github.com/keikurono/haarp-ext-js-viewer.git
 	cd haarp-ext-js-viewer
 	cd src/
 	make
