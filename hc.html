@@ -90,7 +90,7 @@
 							new Ext.grid.RowNumberer(),
 							{header: "Domain", width: 40, dataIndex: 'domain', align: 'left', renderer: showIcon},
 							{header: "Files", width: 20, dataIndex: 'files', align: 'right', renderer: Ext.util.Format.numberRenderer('0,0')},
-							{header: "Sie", width: 36, dataIndex: 'size',
+							{header: "Size", width: 36, dataIndex: 'size',
 								renderer: function(r){ 
 										var num = Math.pow(10,9);																										
 										if(r<num)
@@ -105,7 +105,7 @@
 										}
 									}
 							},
-							{header: "Economia", width: 36, dataIndex: 'eco', 
+							{header: "Economy", width: 36, dataIndex: 'eco', 
 									renderer: function(r){ 
 										var num = Math.pow(10,9);
 										if(r<num)
@@ -124,7 +124,7 @@
 									}
 							},
 							{header: "Hits", width: 26, dataIndex: 'hits', renderer: Ext.util.Format.numberRenderer('0,0')},
-							{header: "Eficiencia %", width: 36, dataIndex: 'porc', align: 'right', renderer: function(r){return Ext.util.Format.number(r,'0,000.00')+' %';}},
+							{header: "Efficiency %", width: 36, dataIndex: 'porc', align: 'right', renderer: function(r){return Ext.util.Format.number(r,'0,000.00')+' %';}},
 							{header: "Active", width: 10, dataIndex: 'active', align: 'center', /*sortable: true,*/
 									renderer: function(r){
 											if(!r)
@@ -140,7 +140,7 @@
 					},
 					tbar: [ '-',
 						{
-							text: 'Actualizar',
+							text: 'Reload',
 							iconCls: 'reload',
 							handler: function(){
 								storeTS.load();
@@ -278,7 +278,7 @@
 											xtype: 'button',
 											id: 'button_atr_ts',
 											disabled: false,
-											text: '<< D&iacute;a Anterior',
+											text: '<< Previous day',
 											handler: function(b,e){
 												var calen = Ext.getCmp('dateHis_ts');
 												var calenValr1 = new Date(calen.getValue()*1-DIAMS);
@@ -312,7 +312,7 @@
 										{
 											xtype: 'button',
 											id: 'button_sig_ts',
-											text: 'D&iacute;a Siguiente >>',
+											text: 'Next day >>',
 											handler: function(b){
 												var calen = Ext.getCmp('dateHis_ts');
 												var calVals1 = new Date(calen.getValue()*1 + DIAMS);
@@ -338,10 +338,10 @@
 									yField: 'cache',
 									tipRenderer : function(chart, record, index, series){														
 										if(series.yField == 'cache'){
-											return record.data.cache+' Archivos';
+											return record.data.cache+' files downloaded';
 										}
 										else{
-											return record.data.hits + ' Despachados';
+											return record.data.hits + ' files sent';
 										}
 									},
 									chartStyle: {
@@ -428,6 +428,7 @@
 			<tr><td align="left"><h1 style="color:#000000"></h1</td></tr>
 			<tr>
 				<br/>
+
 				<td><div id="div1"></div></td>
 			</tr>
 	</table>
