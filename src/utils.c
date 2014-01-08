@@ -37,7 +37,9 @@ int getActive(const char *domain1)
 		strcpy(domain, "205\\.196\\.|199\\.91");
 	if( strstr(domain, "fbcdn") )
 		strcpy(domain, "fbcdn");
-	
+	if( strstr(domain, "aol") )
+		strcpy(domain, "avideos");
+
 	FILE *ft = fopen("/etc/haarp/haarp.lst","r");
 	if(!ft)
 		exit(1);
