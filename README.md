@@ -52,7 +52,7 @@ Access:
 	http://<ip_server>/cgi-bin/haarp.cgi
 
 
-![Hviewer](http://img831.imageshack.us/img831/4756/haarpviewer2.png)
+![Hviewer](http://img832.imageshack.us/img832/2582/pantallazo1jl.png)
 
 If you find this code useful, or wish to fund further development,
 you can use PayPal to donate to the Haarp-Ext-Js-Viewer project:
