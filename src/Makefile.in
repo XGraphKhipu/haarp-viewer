@@ -4,7 +4,7 @@ LDFLAGS = @LDFLAGS@
 DEFINES = @DEFS@
 INSTALL = ../install-sh
 
-P = -Wall -lcgi -lmysqlclient -ldl 
+P = -Wall -lcgi -lmysqlclient -ldl -O2
 
 prefix = @prefix@
 exec_prefix = $(prefix)

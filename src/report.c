@@ -135,7 +135,7 @@ int main(){
 	{
 		MYSQL *connect;
 		connect = mysql_init(NULL);
-		FILE *f = fopen("/tmp/t1","w");		
+		//FILE *f = fopen("/tmp/t1","w");		
 		puts("Content-Type: text/plain");
 		puts("");
 		if(!mysql_real_connect(connect, h, u, p, d, MYSQL_PORT, NULL, 0))
@@ -171,7 +171,7 @@ int main(){
 			lfiles_count *nodo = (lfiles_count *)malloc(sizeof(lfiles_count)*1);
 			nodo->files = atoi(r[0]);
 			nodo->hora = atoi(r[1]);
-			fprintf(f,"(files) %d\n",nodo->hora);
+			//fprintf(f,"(files) %d\n",nodo->hora);
 			nodo->next = NULL;
 			if(!primer)
 			{
@@ -199,7 +199,7 @@ int main(){
 			lfiles_count *nodo = (lfiles_count *)malloc(sizeof(lfiles_count)*1);
 			nodo->files = atoi(r[0]);
 			nodo->hora = atoi(r[1]);
-			fprintf(f,"(hits) %d\n", nodo->hora);
+			//fprintf(f,"(hits) %d\n", nodo->hora);
 			nodo->next = NULL;
 			if(!primer1)
 			{
