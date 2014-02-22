@@ -52,7 +52,7 @@ Access:
 	http://<ip_server>/cgi-bin/haarp.cgi
 
 
-![Hviewer](http://perufw.files.wordpress.com/2014/02/hviewer.jpg)
+<img src="http://perufw.files.wordpress.com/2014/02/hviewer.jpg" alt="Drawing" align="center" width="600"/>
 
 If you find this code useful, or wish to fund further development,
 you can use PayPal to donate to the Haarp-Ext-Js-Viewer project:
