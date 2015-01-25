@@ -24,7 +24,7 @@ For LibCGI:
 	#install autoconf
 	#for derivatives debian:
 	apt-get install autoconf
-	git clone git://github.com/macpod/libcgi.git
+	git clone git://github.com/keikurono/libcgi.git
 	cd libcgi
 	./autogen.sh
 	./configure --prefix=/usr
