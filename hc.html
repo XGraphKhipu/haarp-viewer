@@ -238,7 +238,7 @@
 							totalHits += r.get("hits");
 						});
 					Ext.getCmp("cache_id").setText(totalCache.toString());
-					Ext.getCmp("hits_id").setText(totalHits.toString());
+					Ext.getCmp("hits_id").setText(totalHits.toFixed(1));
 				});								
 
 				tabSouth_ts = new Ext.TabPanel({
