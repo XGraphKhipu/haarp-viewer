@@ -39,7 +39,12 @@ int getActive(const char *domain1)
 		strcpy(domain, "fbcdn");
 	if( strstr(domain, "aol") )
 		strcpy(domain, "avideos");
-
+	if( strstr(domain, "pornhub") )
+		strcpy(domain, "pornhub");
+	if( strstr(domain, "porntube_vid") )
+		strcpy(domain, "video.{0,5}\\.porntube");
+	if( strstr(domain, "porntube_img") )
+		strcpy(domain, "thumbnails.{0,5}\\.porntube");
 	FILE *ft = fopen("/etc/haarp/haarp.lst","r");
 	if(!ft)
 		exit(1);

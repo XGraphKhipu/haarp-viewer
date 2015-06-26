@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 typedef struct files_count{
-	int files;
+	float files;
 	int hora;
 	struct files_count *next;
 } lfiles_count;

@@ -1,5 +1,5 @@
 #
-CPP = gcc-4.4
+CPP = gcc
 P = -Wall -lcgi -lmysqlclient -ldl -O2
 OBJECT = logfile.o report.o utils.o
 

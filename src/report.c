@@ -71,7 +71,7 @@ int main(){
 		long double totalsize = 0;
 		char pet[350];
 		char coma = ' ';
-		strcpy(pet,"select domain,COUNT(*) as files,sum(filesize) as size,sum(filesize*requested) as eco, sum(requested) as hits from haarp where deleted=0 and static=0 group by domain order by 1 DESC");	
+		strcpy(pet,"select domain,COUNT(*) as files,sum(filesize) as size,sum(bytes_requested) as eco, sum(bytes_requested/filesize) as hits from haarp where deleted=0 and static=0 group by domain order by 1 DESC");	
 		if(mysql_query(connect, pet))
 		{
 			logerror(__FILE__,__LINE__,"%s",mysql_error(connect));
@@ -118,7 +118,10 @@ int main(){
 			exit(1);
 		}
 		char pet[200];
-		sprintf(pet,"select date(min(downloaded)), date(max(downloaded)) from haarp where domain=trim('%s')",domain);
+		if(!strcmp(domain,"Totales"))
+			sprintf(pet,"select date(min(downloaded)), date(max(downloaded)) from haarp");	
+		else
+			sprintf(pet,"select date(min(downloaded)), date(max(downloaded)) from haarp where domain=trim('%s')",domain);
 		if(mysql_query(connect,pet))
 		{
 			printf("{success: false, errors: 'Error, mysql connect'}");
@@ -154,8 +157,10 @@ int main(){
 		//~ trim(date);		
 		
 		char pet[200];
-		
-		sprintf(pet,"select count(*), hour(downloaded) as hora from haarp where domain='%s' and date(downloaded)='%s' group by hora",domain,date);
+		if(!strcmp(domain,"Totales"))
+			sprintf(pet,"select count(*), hour(downloaded) as hora from haarp where date(downloaded)='%s' group by hora",date);
+		else
+			sprintf(pet,"select count(*), hour(downloaded) as hora from haarp where domain='%s' and date(downloaded)='%s' group by hora",domain,date);
 		if(mysql_query(connect,pet))
 		{
 			printf("{success: false, errors: 'Error, mysql query'}");
@@ -169,7 +174,7 @@ int main(){
 		while( (r = mysql_fetch_row(res)) != NULL )
 		{
 			lfiles_count *nodo = (lfiles_count *)malloc(sizeof(lfiles_count)*1);
-			nodo->files = atoi(r[0]);
+			nodo->files = atof(r[0]);
 			nodo->hora = atoi(r[1]);
 			//fprintf(f,"(files) %d\n",nodo->hora);
 			nodo->next = NULL;
@@ -184,7 +189,10 @@ int main(){
 				ultimo = nodo;
 			}
 		}
-		sprintf(pet,"select count(*),hour(last_request) as hora from haarp where domain='%s' and date(last_request)='%s' and requested>0 group by hora;",domain,date);
+		if(!strcmp(domain,"Totales"))
+			sprintf(pet,"select sum(bytes_requested/filesize),hour(last_request) as hora from haarp where date(last_request)='%s' and bytes_requested>0 group by hora;",date);
+		else
+			sprintf(pet,"select sum(bytes_requested/filesize),hour(last_request) as hora from haarp where domain='%s' and date(last_request)='%s' and bytes_requested>0 group by hora;",domain,date);
 		if(mysql_query(connect,pet))
 		{
 			printf("{success: false, errors: 'Error, mysql query'}");
@@ -197,7 +205,7 @@ int main(){
 		while( (r = mysql_fetch_row(res)) != NULL )
 		{
 			lfiles_count *nodo = (lfiles_count *)malloc(sizeof(lfiles_count)*1);
-			nodo->files = atoi(r[0]);
+			nodo->files = atof(r[0]);
 			nodo->hora = atoi(r[1]);
 			//fprintf(f,"(hits) %d\n", nodo->hora);
 			nodo->next = NULL;
@@ -236,7 +244,7 @@ int main(){
 					}
 					else
 						cont++;
-					printf("%c{domain: '%s', cache: 0, hits: %d, date: '%d:00'}\n",p,domain,nodo1->files,nodo1->hora);
+					printf("%c{domain: '%s', cache: 0, hits: %.1f, date: '%d:00'}\n",p,domain,nodo1->files,nodo1->hora);
 					p = ',';
 					primer1 = nodo1->next;
 					free(nodo1);
@@ -257,7 +265,7 @@ int main(){
 					}
 					else 
 						cont++;				
-					printf("%c{domain: '%s', cache: %d, hits: %d, date: '%d:00'}\n",p,domain,nodo->files,nodo1->files,nodo->hora);
+					printf("%c{domain: '%s', cache: %.0f, hits: %.1f, date: '%d:00'}\n",p,domain,nodo->files,nodo1->files,nodo->hora);
 					p = ',';
 					primer1 = nodo1->next;
 					free(nodo1);					
@@ -279,7 +287,7 @@ int main(){
 					else
 						cont++;
 			
-					printf("%c{domain: '%s', cache: %d, hits: 0, date: '%d:00'}\n",p,domain,nodo->files,nodo->hora);
+					printf("%c{domain: '%s', cache: %.0f, hits: 0, date: '%d:00'}\n",p,domain,nodo->files,nodo->hora);
 					p = ',';
 					entro = 1;
 					break;
@@ -299,7 +307,7 @@ int main(){
 				}
 				else
 					cont++;
-				printf("%c{domain: '%s', cache: %d, hits: 0, date: '%d:00'}\n",p,domain,nodo->files,nodo->hora);
+				printf("%c{domain: '%s', cache: %.0f, hits: 0, date: '%d:00'}\n",p,domain,nodo->files,nodo->hora);
 				p = ',';
 			}
 			nodo = nodo->next;
@@ -320,7 +328,7 @@ int main(){
 			}
 			else			
 				cont++;
-			printf("%c{domain: '%s', cache: 0, hits: %d, date: '%d:00'}\n",p,domain,nodo->files,nodo->hora);
+			printf("%c{domain: '%s', cache: 0, hits: %.1f, date: '%d:00'}\n",p,domain,nodo->files,nodo->hora);
 			p = ',';
 			nodo = nodo->next;
 		}

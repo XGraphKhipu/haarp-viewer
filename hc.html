@@ -74,7 +74,7 @@
 					baseParams: {start: 1},
 					root: "data",
 					autoLoad: true,
-					fields: ['domain','files','size','eco','hits','porc', {name: 'active', type:'int'}]
+					fields: ['domain','files','size','eco',{name:'hits', type:'float'},'porc', {name: 'active', type:'int'}]
 				});
 				gridTs = new Ext.grid.GridPanel({
 					store: storeTS,
@@ -123,7 +123,7 @@
 										}
 									}
 							},
-							{header: "Hits", width: 26, dataIndex: 'hits', renderer: Ext.util.Format.numberRenderer('0,0')},
+							{header: "Hits", width: 26, dataIndex: 'hits', renderer: Ext.util.Format.numberRenderer("0,000.0")},
 							{header: "Efficiency %", width: 36, dataIndex: 'porc', align: 'right', renderer: function(r){return Ext.util.Format.number(r,'0,000.00')+' %';}},
 							{header: "Active", width: 10, dataIndex: 'active', align: 'center', /*sortable: true,*/
 									renderer: function(r){
@@ -228,7 +228,7 @@
 					url: "report.cgi",
 					params: {start : 3 },
 					root: "data",
-					fields: ['domain',{name: 'cache', type: 'int'},{name: 'hits', type:'int'}, 'date']
+					fields: ['domain',{name: 'cache', type: 'float'},{name: 'hits', type:'float'}, 'date']
 				});
 				storeHis_ts.on("load",function(){
 					totalCache = 0;
@@ -338,7 +338,7 @@
 									yField: 'cache',
 									tipRenderer : function(chart, record, index, series){														
 										if(series.yField == 'cache'){
-											return record.data.cache+' files downloaded';
+											return Math.round(record.data.cache)+' files downloaded';
 										}
 										else{
 											return record.data.hits + ' files sent';
