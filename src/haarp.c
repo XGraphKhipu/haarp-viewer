@@ -33,7 +33,7 @@ int main(){
 	
 	//if(cgi_session_var_exists("user"))
 	//{
-		cgi_include("/var/www/hc.html");
+		cgi_include("/var/www/html/hc.html");
 	/*}
 	else
 	{
