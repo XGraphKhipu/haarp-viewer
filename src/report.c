@@ -190,9 +190,9 @@ int main(){
 			}
 		}
 		if(!strcmp(domain,"Totales"))
-			sprintf(pet,"select sum(bytes_requested/filesize),hour(last_request) as hora from haarp where date(last_request)='%s' and bytes_requested>0 group by hora;",date);
+			sprintf(pet,"select count(*),hour(last_request) as hora from haarp where date(last_request)='%s' and bytes_requested>0 group by hora;",date);
 		else
-			sprintf(pet,"select sum(bytes_requested/filesize),hour(last_request) as hora from haarp where domain='%s' and date(last_request)='%s' and bytes_requested>0 group by hora;",domain,date);
+			sprintf(pet,"select count(*),hour(last_request) as hora from haarp where domain='%s' and date(last_request)='%s' and bytes_requested>0 group by hora;",domain,date);
 		if(mysql_query(connect,pet))
 		{
 			printf("{success: false, errors: 'Error, mysql query'}");
