@@ -470,19 +470,14 @@ int main(){
 			
 			char scoma = ' ';
 			char *part = strtok(users_db, ",;");
-			//char date_downloaded[50], date_modified[50]; 
 			while(part) {
 				
 				printf("%c{name: '%s'", scoma, part); 
 				printf(", ip: '%s'", part);            part = strtok(NULL, ",;");
 				time_t tdown = atoi(part);
-				//strftime(date_downloaded, 50,"%d-%b-%Y %I:%M:%S %p", localtime(&tdown));
-				//printf(", date_downloaded: '%s'", date_downloaded); part = strtok(NULL, ",;");
 				printf(", date_downloaded: '%s'", time_t2date(abs(time(NULL) - tdown), 1)); part = strtok(NULL, ",;");
 
 				time_t tmodi = atoi(part);
-				//strftime(date_modified,   50,"%d-%b-%Y %I:%M:%S %p", localtime(&tmodi));
-				//printf(", date_modified: '%s'", date_modified);     part = strtok(NULL, ",;");
 				printf(", date_modified: '%s'", time_t2date(abs(time(NULL) - tmodi), 1));   part = strtok(NULL, ",;");
 
 				printf(", perc_downloaded: %.1f", (atoi(part)*100.0)/(size?size:(fsize?fsize:1) + 0.0)); part = strtok(NULL, ",;");

@@ -105,13 +105,7 @@ char * time_t2date(time_t t, int format_with_sec) {
 
 	char coma[5];
 	memset(coma, '\0', 5);
-	
-	//~ if(t/mon) {
-		//~ sprintf(tmp, "%li Mont%s", t/mon, (t/mon>1)?"hs":"h");
-		//~ strcat(re, tmp);
-		//~ t = t%mon;
-		//~ strcpy(coma, ", ");
-	//~ }
+
 	if(t/day) {
 		sprintf(re, "%li Da%s", t/day, (t/day == 1)?"y":"ys");
 		t = t%day;
