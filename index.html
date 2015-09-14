@@ -1,42 +1,31 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="UTF-8">
     <title>Haarp-ext-js-viewer by keikurono</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
-    <div class="wrapper">
-      <header>
-        <h1 class="header">Haarp-ext-js-viewer</h1>
-        <p class="header">A viewer made ​​in Ext Js for HaarpCache</p>
+    <section class="page-header">
+      <h1 class="project-name">Haarp-ext-js-viewer</h1>
+      <h2 class="project-tagline">A viewer made ​​in Ext Js for HaarpCache</h2>
+      <a href="https://github.com/keikurono/haarp-viewer" class="btn">View on GitHub</a>
+      <a href="https://github.com/keikurono/haarp-viewer/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/keikurono/haarp-viewer/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/keikurono/haarp-ext-js-viewer/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/keikurono/haarp-ext-js-viewer/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/keikurono/haarp-ext-js-viewer">View On GitHub</a></li>
-        </ul>
-
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/keikurono">keikurono</a></p>
-
-
-      </header>
-      <section>
-        <h1>
-<a id="haarp-ext-js-viewer" class="anchor" href="#haarp-ext-js-viewer" aria-hidden="true"><span class="octicon octicon-link"></span></a>haarp-ext-js-viewer</h1>
+    <section class="main-content">
+      <h1>
+<a id="haarp-viewer" class="anchor" href="#haarp-viewer" aria-hidden="true"><span class="octicon octicon-link"></span></a>haarp-viewer</h1>
 
 <p>A viewer made ​​in Ext Js for HaarpCache</p>
 
-<h1>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>Need to install ExtJs and LibCGI</p>
 
@@ -44,7 +33,7 @@
 
 <pre><code>#installing unzip
 apt-get install unzip
-cd /var/www/
+cd /var/www/html
 wget http://extjs.cachefly.net/ext-3.4.0.zip 
 unzip  ext-3.4.0.zip
 ln -s ext-3.4.0 ext
@@ -75,7 +64,7 @@ make
 cd ..
 cp src/*.cgi /usr/lib/cgi-bin/
 cp hc.html /usr/lib/cgi-bin/
-cp -r images /var/www/
+cp -r images /var/www/html/
 touch /var/log/haarp/webaccess.log
 chown www-data:www-data /var/log/haarp/webaccess.log
 echo "ACCESSWEBLOG /var/log/haarp/webaccess.log" &gt;&gt; /etc/haarp/haarp.conf
@@ -86,19 +75,44 @@ echo "ACCESSWEBLOG /var/log/haarp/webaccess.log" &gt;&gt; /etc/haarp/haarp.conf
 <pre><code>http://&lt;ip_server&gt;/cgi-bin/haarp.cgi
 </code></pre>
 
-<p><img src="http://perufw.files.wordpress.com/2014/02/hviewer.jpg" alt="Drawing" align="center" width="600"></p>
+<p><img src="https://perufw.files.wordpress.com/2015/09/haarpviewer.gif" alt="GIF Demo"></p>
+
+<h2>
+<a id="changelog" class="anchor" href="#changelog" aria-hidden="true"><span class="octicon octicon-link"></span></a>Changelog</h2>
+
+<p><strong>Version 1.1</strong></p>
+
+<p>2015/09/14</p>
+
+<ul>
+<li>Add view for the files in cache.</li>
+<li>Add more images for each plugin additional in HaarpCache 1.4.x.</li>
+<li>Fix problem with the report of used of the HaarpCache.</li>
+<li>Change of values integer to floats for report of field Hits in the main report.</li>
+</ul>
+
+<p><strong>Version 1.0</strong></p>
+
+<p>2012/04/07</p>
+
+<ul>
+<li>First version of HaarpCache-View.</li>
+</ul>
 
 <p>If you find this code useful, or wish to fund further development,
 you can use PayPal to donate to the Haarp-Ext-Js-Viewer project:</p>
 
 <p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QYCCSYYGW52QU"><br>
 <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"></a></p>
-      </section>
-      <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/keikurono/haarp-viewer">Haarp-ext-js-viewer</a> is maintained by <a href="https://github.com/keikurono">keikurono</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+
+    </section>
+
+  
   </body>
 </html>
