@@ -35,6 +35,9 @@
 			.reports{		
 				background: url(../images/chart.png) 0px 3px no-repeat !important;
 			}
+			.storage{
+					background: url(../images/storage.png) 0px 3px no-repeat !important;
+			}
 			.down1{
 				background: url(../images/down2.png) 0px 0px no-repeat !important;
 			}
@@ -42,16 +45,76 @@
 				background: url(../images/up2.png) 0px 0px no-repeat !important;
 			}
 		</style>
+        <!-- plugins -->
+        <script type="text/javascript"  src="../ext/examples/ux/TabCloseMenu.js"></script>
+        <script type="text/javascript"  src="../ext/examples/ux/RowEditor.js"></script>
+        <script type="text/javascript"  src="../ext/examples/ux/CheckColumn.js"></script>
+		<script type="text/javascript" src="../ext/examples/ux/ColumnHeaderGroup.js"></script>
+		<script type="text/javascript" src="../ext/examples/ux/fileuploadfield/FileUploadField.js"></script>
+		<script type="text/javascript" src="../ext/examples/ux/GroupSummary.js"></script>
+		<script type="text/javascript" src="../ext/examples/ux/RowExpander.js"></script>
+		<script type="text/javascript" src="../ext/examples/ux/CenterLayout.js"></script>
+<!--
+		<script type="text/javascript" src="../web/plugins-extjs/maximgb/TreeGrid.js"></script>
+-->
+		<script>
+			//~ Fix some problem with browsers!.
+			if (!Ext.isDefined(Ext.webKitVersion)) {
+				Ext.webKitVersion = Ext.isWebKit ? parseFloat(/AppleWebKit\/([\d.]+)/.exec(navigator.userAgent)[1], 10) : NaN;
+			}
+			/*
+			 * Box-sizing was changed beginning with Chrome v19.  For background information, see:
+			 * http://code.google.com/p/chromium/issues/detail?id=124816
+			 * https://bugs.webkit.org/show_bug.cgi?id=78412
+			 * https://bugs.webkit.org/show_bug.cgi?id=87536
+			 * http://www.sencha.com/forum/showthread.php?198124-Grids-are-rendered-differently-in-upcoming-versions-of-Google-Chrome&p=824367
+			 *
+			 * */
+			if (Ext.isWebKit && Ext.webKitVersion >= 535.2) { // probably not the exact version, but the issues started appearing in chromium 19
+				Ext.override(Ext.grid.ColumnModel, {
+					getTotalWidth: function (includeHidden) {
+						if (!this.totalWidth) {
+							var boxsizeadj = 2;
+							this.totalWidth = 0;
+							for (var i = 0, len = this.config.length; i < len; i++) {
+								if (includeHidden || !this.isHidden(i)) {
+									this.totalWidth += (this.getColumnWidth(i) + boxsizeadj);
+								}
+							}
+						}
+						return this.totalWidth;
+					}
+				});
+
+
+				Ext.onReady(function() {
+					Ext.get(document.body).addClass('ext-chrome-fixes');
+					Ext.util.CSS.createStyleSheet('@media screen and (-webkit-min-device-pixel-ratio:0) {.x-grid3-cell{box-sizing: border-box !important;}}', 'chrome-fixes-box-sizing');
+				});
+			}
+			//~ 
+		</script>
 		<script>
 			Ext.onReady(function(){
-				//Ext.get("div1").center();
+				formatHours = function(r){
+						if(r>24*3600)
+								return Math.round(r/(24*3600)*100)/100+" Days";
+						if(r>3600)
+								return Math.round(r/(3600)*100)/100+" Hrs";
+						if(r>60)
+								return Math.round(r/(60)*100)/100+" Min";
+						return r+" Sec";
+				}
+				correctLabelToolbar = function(text) { 
+					return '<table><tr><td class="x-btn-tl"><i>&nbsp;</i></td><td class="x-btn-tc"></td><td class="x-btn-tr"><i>&nbsp;</i></td></tr><tr><td class="x-btn-ml"><i>&nbsp;</i></td><td>' + text + '</td><td class="x-btn-mr"><i>&nbsp;</i></td></tr><tr><td class="x-btn-tl"><i>&nbsp;</i></td><td class="x-btn-tc"></td><td class="x-btn-tr"><i>&nbsp;</i></td></tr></table>';
+				}
 				var DIAMS = 24*60*60*1000;
 				function getFecha(date){
 					return (new Date(date)).format("Y-m-d");
 				}
 				showIcon = function(data, metadata, record){
 					var str = record.get("domain");
-					return "<img src='../images/" + str.replace(".","_") + ".jpg' width=11 height=11/> " + str;
+					return "<img src='../images/" + (str.replace(".","_")).toLowerCase() + ".jpg' width=11 height=11/> " + str;
 				}
 				function ClassHistory(hmin,hmax,data){
 					this.min = hmin;
@@ -240,7 +303,47 @@
 					Ext.getCmp("cache_id").setText(totalCache.toString());
 					Ext.getCmp("hits_id").setText(totalHits.toFixed(1));
 				});								
-
+				var expand = new Ext.ux.grid.RowExpander({
+						tpl: new Ext.XTemplate(
+							'<div style="margin-left:100px;">',
+							'<center><tt><br/><b><it>All Users: </it></b>'+
+								'<table border=0 width=112%>'+
+									'<tr><th>IP</th><th colspan="2">Downloaded</th><th>Miss</th><th colspan="2">Modified</th><th>Hits</th></tr>' +
+									'<tpl for="users">' +
+											'<tr><td><tt>{ip}</tt></td><td colspan="2"><tt>{date_downloaded}</tt></td><td><tt>{perc_downloaded}%</tt></td><td colspan="2"><tt>{date_modified}</tt></td><td><tt>{hits}</tt></td>' +
+								'</tr>' +
+									'</tpl>'+
+								'</table>'+
+							'</tt></center><br/>',
+							'</div>'
+						)
+				});
+				var storeLiveHC = new Ext.data.JsonStore({
+					url: "report.cgi",
+					totalProperty: 'totalCount',
+					baseParams: {start : 4 },
+					root: "data",
+					remoteSort: true,
+					fields: ['id', 'modified', 
+							{name: 'difftime', type: 'int'},
+							{name: 'requested', type: 'float'}, 
+							'users', 
+							'downloaded', 
+							'icon', 
+							'filetype', 
+							'file', 
+							{name: 'filesize', type:'int'},
+							'rg',
+							{name: 'range_back', mapping: 'rg'},
+							{name: 'size', type:'int'},
+							{name: 'deleted', type: 'int'},
+							{name: 'oldfile', type: 'int'}
+					]
+				});
+				storeLiveHC.setDefaultSort('modified', 'desc');
+				var domain = "Totales";
+				storeLiveHC.baseParams = {start: 4, domain: domain, sort: 'modified', dir: 'DESC'};
+				
 				tabSouth_ts = new Ext.TabPanel({
 					region: 'south',
 					split: true,									
@@ -403,20 +506,214 @@
 									]
 								}
 							]
-						}
+						}, 
 					]
 				});
+				GridPanelDB = new Ext.grid.GridPanel({
+					title: 'Storage',
+					iconCls: 'storage',
+					//~ layout: 'anchor',
+					id: 'grid_hc_db',
+					plugins: expand,
+					layout: 'fit',
+					loadMask: true,
+					store: storeLiveHC,
+					stripeRows: true,
+					colModel: new Ext.grid.ColumnModel({
+						defaults: {
+							sortable: true
+							//~ align: 'right'
+						},
+						columns: [
+							new Ext.grid.RowNumberer(),
+							expand,
+							{header: " ", width: 15, align: 'center', sortable: false, dataIndex: 'icon'},
+							{header: " ", width: 15, dataIndex: 'difftime', sortable: false, align: 'center', renderer: function (difftime) {
+									if ( difftime <= 60 ) 
+										return '<img src="../images/thunderSendActive.png" width=20 height=20/>';
+									else 
+										return '<img src="../images/thunderSendDesactive.png" width=20 height=20/>';
+							}},
+							{header: "Users", width: 55, dataIndex: 'users', sortable: false, align: 'left', renderer: function(r, meta, record) {
+								var len = r.length;
+								if ( len ) {
+									if ( len > 1 )
+										return '<img src="../images/users.jpg" height=18/> ' + r[0].name;
+									else return '<img src="../images/user.jpg" height=16/> ' + r[0].name;
+								}
+								return ' ';
+							}},
+							{header: "Modified", width: 70, dataIndex: 'modified', align: 'left'},
+							{header: "Type", width: 15, align: 'center', sortable: false, dataIndex: 'filetype'},											
+							{header: "File Name", width: 130, dataIndex: 'file', align: 'left'},
+							{header: "Download", width: 40, align: 'right', dataIndex: 'filesize', renderer: Ext.util.Format.fileSize},
+							{header: "Process", width: 64, align: 'center', sortable: false, dataIndex: 'rg',
+								renderer: function (r, meta, record) {
+									var rsplit = r.split(',');
+									var lrsplit = rsplit.length;
+									var size = record.data.size;
+									var filesize = record.data.filesize;
+									if(!size) {
+										var maxsize = 0;
+										for(var i = 0; i < lrsplit; i++) {
+											var rsplitsplit = (rsplit[i]).split('-');
+											if( rsplitsplit.length != 2 ) {
+												//~ console.log("Error format range file!!");
+												//~ console.log(r);
+												continue;
+											}
+											var a = rsplitsplit[0]*1;
+											var b = rsplitsplit[1]*1;
+											if( maxsize < b )
+												maxsize = b;
+										}
+										size = maxsize;
+									}
+									//~ html = '<div class="x-grid3-cell-inner x-grid3-col-3" unselectable="on">' +
+									html = '<div class="x-progress-wrap"> <div class="x-progress-inner">';
+									for(var i = 0; i < lrsplit; i++) {
+										rsplitsplit = (rsplit[i]).split('-');
+										var a = rsplitsplit[0];
+										var b = rsplitsplit[1];
+										html = html + '<div class="x-progress-bar" style="width:'+(b-a)*100/size+'%;position:absolute; left:'+a*100/size+'%; "></div>';
+									}
+									//~ console.log(filesize);
+									//~ console.log(size);
+									if( size )
+										html = html + '<div class="x-progress-text x-progress-text-back" style="width:100%;position:absolute;left:0%;font-size: 16px;color: #5050A0;">' + (filesize*100/size).toFixed(1) + '%</div>'
+									else
+										html = html + '<div class="x-progress-text x-progress-text-back" style="width:100%;position:absolute;left:0%;font-size: 16px;color: #5050A0;">0%</div>'
+									//~ html = html + '</div></div></div>';
+									html = html + '</div></div>';
+									return html;
+								}
+							},
+							{header: "Size", width: 36, align: 'right',dataIndex: 'size', renderer: Ext.util.Format.fileSize},
+							{header: "Hits", width: 26, dataIndex: 'requested', align: 'right', renderer: function(r) {
+								return r.toFixed(1)*1;
+							}},
+							{header: "Old", width: 45, dataIndex: 'oldfile', align: 'right', renderer: function(r) {
+								var re = formatHours(r);
+								return re + '   ';
+							}}
+						]
+					}),
+					viewConfig: {
+						forceFit: true,
+						autoFill: true
+					},
+					tbar: [ '-',
+						{
+							text: 'Reload',
+							iconCls: 'reload',
+							handler: function(){
+								storeLiveHC.load({
+									params: {
+										domain: domain,
+										limitPage: 50,
+										limitPageStart: 0,
+										sort: 'modified',
+										dir: 'DESC'
+									}
+								});
+							}
+						}, {xtype: 'label', html: correctLabelToolbar('Domain')},
+						{
+							xtype: 'combo',
+							width: 150,
+							id: 'buscar_combo',
+							store: new Ext.data.JsonStore({
+								url: "report.cgi",
+								totalProperty: 'totalCount',
+								baseParams: {start : 5 },
+								root: "data",
+								fields: ['domain'] 
+							}),
+							listeners: {
+								'select': function (c, r) {
+									domain = r.get('domain');
+									storeLiveHC.load({
+										params: {
+											domain: domain,
+											limitPage: 50,
+											limitPageStart: 0,
+											sort: 'modified',
+											dir: 'DESC'
+										}
+									});
+									storeLiveHC.baseParams = {start: 4, domain: domain, sort: 'modified', dir: 'DESC'};
+								}
+							},
+							emptyText: '-- ALL --',
+							//selectOnFocus:true,
+							displayField: 'domain',
+							valueField: 'domain',
+							triggerAction: 'all',
+							editable: true
+							//typeAhead: true
+						},
+						'->'
+					],
+					// paging bar on the bottom
+					bbar: new Ext.PagingToolbar({
+						pageSize: 50,
+						store: storeLiveHC,
+						displayInfo: true,
+						displayMsg: 'Displaying topics {0} - {1} of {2}',
+						emptyMsg: "No topics to display",
+						paramNames: {
+								start: 'limitPageStart',
+								limit: 'limitPage'
+						}
+					})
+
+				})
+						
 				panel_grid_ts = new Ext.Panel({
-					renderTo: "div1",
-					width: 860,
-					height: 740,
-					title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555">HAARPCACHE - VIEW</h1></td></tr></center>',
+					region: 'center',
+					//~ width: 860,
+					//~ height: 740,
+					iconCls: 'Reports',
+					title: 'Viewer',
+					//~ title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555">HAARPCACHE - VIEW</h1></td></tr></center>',
 					border: false,
 					layout: 'border',
 					items:[
 						gridTs,
 						tabSouth_ts
 					]
+				});
+				tabPanelMain = new Ext.TabPanel({
+					region: 'center',
+					border: false,
+					title: 'Viewer',
+					//~ layout: 'border',
+					activeTab: 0,
+					items: [
+						panel_grid_ts,
+						GridPanelDB
+					]
+				});
+				mainPanel = new Ext.Panel({
+					renderTo: 'div1',
+					border: true,
+					width: 1100,
+					height: 750,
+					title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555">HAARPCACHE - VIEW</h1></td></tr></center>',
+					layout: 'border',
+					items: [
+						tabPanelMain
+					]
+				});
+				storeTS.load();
+				storeLiveHC.load({
+					params: {
+						domain: domain,
+						limitPage: 50,
+						limitPageStart: 0,
+						sort: 'modified',
+						dir: 'DESC'
+					}
 				});
 			});
 

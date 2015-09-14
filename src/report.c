@@ -25,6 +25,7 @@
 #include <libcgi/session.h>
 #include <mysql/mysql.h>
 #include <sys/statvfs.h>
+#include <time.h>
 #include "logfile.h"
 #include "utils.h"
 #include "report.h"
@@ -343,6 +344,190 @@ int main(){
 		}
 		mysql_close(connect);
 		puts("]}");
+	}
+	if( start == 4 ) {
+		puts("Content-Type: text/plain\n\n");
+		
+		char * domain = charmalloc(10);
+		char * sortField = charmalloc(100);
+		char * sortDir = charmalloc(10);
+		
+		memset(sortField, '\0', 100);
+		memset(sortDir, '\0', 10);
+		
+		int limitPage, limitPageStart;
+		
+		strncpy(domain, cgi_param("domain"), 100);
+		strncpy(sortField, cgi_param("sort"), 100);
+		strncpy(sortDir, cgi_param("dir"), 10);
+		
+		limitPage = atoi(cgi_param("limitPage"));
+		limitPageStart = atoi(cgi_param("limitPageStart"));
+		
+		if(!es_name(domain))
+		{
+			puts("{success: false, errors: 'Error, name domain is incorrect.'}");
+			logerror(__FILE__,__LINE__, "Error, domain name is incorrect: '%s'", domain);
+			exit(1);
+		}
+		if(!es_name(sortField)) {
+			puts("{success: false, errors: 'Error, name of the \"field sort\" is incorrect.'}");
+			logerror(__FILE__,__LINE__, "Error, 'field sort' name is incorrect: '%s'", sortField);
+			exit(1);
+		}
+		if( !strlen(sortField) || !strlen(sortDir) ) {
+			strcpy(sortField, "modified");
+			strcpy(sortDir, "DESC");
+		}
+		if( strcmp(sortDir, "DESC") && strcmp(sortDir, "ASC") ) {
+			puts("{success: false, errors: \"Error, name of the 'sort dir' is incorrect.\"}");
+			logerror(__FILE__,__LINE__, "Error, 'sort dir' name is incorrect: '%s'", sortDir);
+			exit(1);
+		}
+
+		if( !strcmp(sortField, "oldfile") ) 
+			strcpy(sortField, "downloaded");
+		if( !strcmp(sortField, "requested") ) 
+			strcpy(sortField, "hits");
+
+		MYSQL *connectHaarp;
+
+		connectHaarp = mysql_init(NULL);
+
+		if(!mysql_real_connect(connectHaarp,h,u,p,d,MYSQL_PORT,NULL,0)) {
+			printf("{success :false, errors: 'Error, mysql connect'}");
+			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
+			exit(1);
+		}
+		
+		char pet[1000];
+		if( !strstr(domain, "Totales") )
+			sprintf(pet,"SELECT file, domain, size, modified, abs(unix_timestamp(now())-UNIX_TIMESTAMP(modified)) as difftime, bytes_requested/filesize as hits, downloaded, rg, \
+			deleted, filesize, abs(unix_timestamp(now())-UNIX_TIMESTAMP(downloaded)) as oldfile, users FROM haarp WHERE domain='%s' ORDER BY %s %s limit %i,%i", domain, sortField, sortDir, limitPageStart, limitPage);
+		else 
+			sprintf(pet,"SELECT file, domain, size, modified, abs(unix_timestamp(now())-UNIX_TIMESTAMP(modified)) as difftime, bytes_requested/filesize as hits, downloaded, rg, \
+			deleted, filesize, abs(unix_timestamp(now())-UNIX_TIMESTAMP(downloaded)) as oldfile, users FROM haarp ORDER BY %s %s limit %i,%i", sortField, sortDir, limitPageStart, limitPage);
+		if ( mysql_query(connectHaarp,pet) ) {
+			printf("{success: false, errors: 'Error, mysql query'}");
+			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
+			exit(1);
+		}
+		puts("{ data: [");
+		char coma = ' ';
+		MYSQL_RES *res = mysql_store_result(connectHaarp);
+		MYSQL_ROW r;
+		char extention[50];
+		memset(extention,'\0',50);
+		while( (r = mysql_fetch_row(res)) != NULL ) {
+			
+			if( strstr(r[0], ".flv") ) 
+				strcpy(extention, "flv.png");
+			if( strstr(r[0], ".exe") ) 
+				strcpy(extention, "exe.png");
+			if( strstr(r[0], ".bin") )
+				strcpy(extention, "bin.png");
+			if( strstr(r[0], ".cab") )
+				strcpy(extention, "cab.png");
+			if( strstr(r[0], ".txt") )
+				strcpy(extention, "txt.png");
+			if( strstr(r[0], ".nup") )
+				strcpy(extention, "nup.png");	
+			if( strstr(r[0], ".swf") )
+				strcpy(extention, "swf.png");	
+			if( strstr(r[0], ".gif") )
+				strcpy(extention, "gif.png");	
+			if( strstr(r[0], ".png") || strstr(r[0], ".jpg") || strstr(r[0], ".jpeg") )
+				strcpy(extention, "jpg.png");
+			if( strstr(r[0], ".mp4") )
+				strcpy(extention, "mp4.png");
+			if( strstr(r[0], ".webm") )
+				strcpy(extention, "webm.png");
+			if( strstr(r[0], ".rar") )
+				strcpy(extention, "rar.png");
+			if( strstr(r[0], ".zip") )
+				strcpy(extention, "zip.png");
+			if( strstr(r[0], ".tar") )
+				strcpy(extention, "tar.png");
+			if( strstr(r[0], ".gzip") )
+				strcpy(extention, "gzip.png");
+			if( strstr(r[0], "-aud.flv") )
+				strcpy(extention, "audio.png");
+			if( strstr(r[0], "-vid.flv") || strstr(r[1], "netflix") )
+				strcpy(extention, "video.png");
+			if(!strlen(extention))
+				strcpy(extention, "unknow.png");
+			
+			printf("%c {id: '%s_%s', modified: '%s', difftime: %s, requested: %s, downloaded: '%s', icon: '<img src=\"../web/imagen/icon/%s.jpg\" width=20 height=20/>', \
+			filetype: '<img src=\"../web/imagen/%s\" width=20 height=20/>', file: '%s', rg: '%s', size: %s, deleted: %s, filesize: %s, oldfile: %s, ", \
+			 coma,r[1],r[0],r[3],r[4],r[5],r[6],strtolower(r[1]),extention,r[0],r[7],r[2], r[8], r[9], r[10]);
+			printf("users: [\n");
+			
+			int fsize = atoi(r[9]);
+			int size  = atoi(r[2]);
+
+			char users_db[1000];
+			strcpy(users_db, r[11]);
+			
+			char scoma = ' ';
+			char *part = strtok(users_db, ",;");
+			//char date_downloaded[50], date_modified[50]; 
+			while(part) {
+				
+				printf("%c{name: '%s'", scoma, part); 
+				printf(", ip: '%s'", part);            part = strtok(NULL, ",;");
+				time_t tdown = atoi(part);
+				//strftime(date_downloaded, 50,"%d-%b-%Y %I:%M:%S %p", localtime(&tdown));
+				//printf(", date_downloaded: '%s'", date_downloaded); part = strtok(NULL, ",;");
+				printf(", date_downloaded: '%s'", time_t2date(abs(time(NULL) - tdown), 1)); part = strtok(NULL, ",;");
+
+				time_t tmodi = atoi(part);
+				//strftime(date_modified,   50,"%d-%b-%Y %I:%M:%S %p", localtime(&tmodi));
+				//printf(", date_modified: '%s'", date_modified);     part = strtok(NULL, ",;");
+				printf(", date_modified: '%s'", time_t2date(abs(time(NULL) - tmodi), 1));   part = strtok(NULL, ",;");
+
+				printf(", perc_downloaded: %.1f", (atoi(part)*100.0)/(size?size:(fsize?fsize:1) + 0.0)); part = strtok(NULL, ",;");
+				printf(", hits: %.1f}\n", atoi(part)/(size?size:(fsize?fsize:1) + 0.0));                 part = strtok(NULL, ",;");
+				scoma = ',';
+			}
+			
+			printf("]}\n");
+			coma = ',';
+		}
+		if( !strstr(domain, "Totales") )
+			sprintf(pet,"SELECT count(*) FROM haarp WHERE domain='%s'", domain);
+		else
+			sprintf(pet,"SELECT count(*) FROM haarp");
+			
+		if ( mysql_query(connectHaarp, pet) ) {
+			printf("], totalCount: 0}");
+			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
+			exit(1);
+		}
+		r = mysql_fetch_row(mysql_store_result(connectHaarp));
+		printf("], totalCount: %s}", r[0]);
+	}
+	if ( start == 5 ) {
+		puts("Content-type: text/plain\n\n");
+		MYSQL * connect = mysql_init(NULL);
+		if(!mysql_real_connect(connect,h,u,p,d,MYSQL_PORT,NULL,0))
+		{
+			logerror(__FILE__,__LINE__,"%s",mysql_error(connect));
+			exit(1);
+		}
+		puts("{data: [{domain: 'Totales'}");
+		ldominios *p = getDomainCache(connect);
+		if(!p) {
+			puts("], totalCount: 1}");
+			return 1;
+		}
+		ldominios *n = p;
+		int tcount = 1; 
+		while ( n != NULL ) {
+			printf(",{domain: '%s'}\n", n->d);
+			++tcount;
+			n = n->next;
+		}
+		printf("], totalCount: %i}", tcount);
 	}
 	return 1;
 }

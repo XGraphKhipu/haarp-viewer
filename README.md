@@ -4,8 +4,7 @@ haarp-ext-js-viewer
 A viewer made ​​in Ext Js for HaarpCache
 
 
-Installation
-===================
+## Installation
 
 Need to install ExtJs and LibCGI
 
@@ -53,6 +52,22 @@ Access:
 
 
 <img src="http://perufw.files.wordpress.com/2014/02/hviewer.jpg" alt="Drawing" align="center" width="600"/>
+
+## Changelog
+
+__Version 1.1__
+
+2015/09/14
+
+* Add view for the files in cache.
+* Add more images for each plugin additional in HaarpCache 1.4.x.
+* Fix problem with the report of used of the HaarpCache.
+* Change of values integer to floats for report of field Hits in the main report.
+
+__Version 1.0__
+
+2012/04/07
+* First version of HaarpCache-View.
 
 If you find this code useful, or wish to fund further development,
 you can use PayPal to donate to the Haarp-Ext-Js-Viewer project:
