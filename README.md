@@ -50,8 +50,7 @@ Access:
 	
 	http://<ip_server>/cgi-bin/haarp.cgi
 
-
-<img src="http://perufw.files.wordpress.com/2014/02/hviewer.jpg" alt="Drawing" align="center" width="600"/>
+![GIF Demo] (https://perufw.files.wordpress.com/2015/09/haarpviewer.gif)
 
 ## Changelog
 
@@ -67,7 +66,9 @@ __Version 1.1__
 __Version 1.0__
 
 2012/04/07
+
 * First version of HaarpCache-View.
+
 
 If you find this code useful, or wish to fund further development,
 you can use PayPal to donate to the Haarp-Ext-Js-Viewer project:
