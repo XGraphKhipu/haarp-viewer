@@ -1,4 +1,4 @@
-haarp-viewer
+Haarp-Viewer
 ===================
 
 A viewer made ​​in Ext Js for HaarpCache
