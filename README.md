@@ -50,7 +50,8 @@ Access:
 	
 	http://<ip_server>/cgi-bin/haarp.cgi
 
-![GIF Demo] (https://perufw.files.wordpress.com/2015/09/haarpviewer.gif)
+## Demo 
+![GIF Demo] (https://perufw.files.wordpress.com/2015/09/haarpviewer1.gif)
 
 ## Changelog
 
@@ -67,11 +68,17 @@ __Version 1.0__
 
 2012/04/07
 
-* First version of HaarpCache-View.
+* First version of the Haarp-View.
 
 
-If you find this code useful, or wish to fund further development,
-you can use PayPal to donate to the Haarp-Ext-Js-Viewer project:
 
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QYCCSYYGW52QU"><br>
-<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"></a>
+<br/>
+<div align="center">
+<p><h6>If you find this code useful, or wish to fund further development,
+you can use PayPal to donate to the HaarpCache project:</h6>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QYCCSYYGW52QU"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"></a>
+</div>
+
+    
+  </body>
+</html>
