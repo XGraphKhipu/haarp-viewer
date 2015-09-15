@@ -1,9 +1,9 @@
 Haarp-Viewer
 ===================
 
-A viewer made ​​in Ext Js for HaarpCache
+A viewer made ​​in Ext Js for [HaarpCache] (https://github.com/keikurono/haarpcache).
 
-## Demo 
+## ▓ Demo 
 ![GIF Demo] (https://perufw.files.wordpress.com/2015/09/haarpviewer1.gif)
 
 ## Installation
