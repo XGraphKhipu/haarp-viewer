@@ -3,6 +3,8 @@ haarp-viewer
 
 A viewer made ​​in Ext Js for HaarpCache
 
+## Demo 
+![GIF Demo] (https://perufw.files.wordpress.com/2015/09/haarpviewer1.gif)
 
 ## Installation
 
@@ -49,9 +51,6 @@ Install HaarpViewer:
 Access:
 	
 	http://<ip_server>/cgi-bin/haarp.cgi
-
-## Demo 
-![GIF Demo] (https://perufw.files.wordpress.com/2015/09/haarpviewer1.gif)
 
 ## Changelog
 
