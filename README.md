@@ -12,9 +12,9 @@ Need to install ExtJs and LibCGI
 
 For ExtJs:
 
-	#installing unzip
+	su
 	apt-get install unzip
-	cd /var/www/html
+	cd /var/www/
 	wget http://extjs.cachefly.net/ext-3.4.0.zip 
 	unzip  ext-3.4.0.zip
 	ln -s ext-3.4.0 ext
@@ -22,9 +22,7 @@ For ExtJs:
 For LibCGI:
 
 	cd /usr/src
-	#install autoconf
-	#for derivatives debian:
-	apt-get install autoconf
+	apt-get install autoconf git
 	git clone git://github.com/keikurono/libcgi.git
 	cd libcgi
 	./autogen.sh
@@ -42,8 +40,8 @@ Install HaarpViewer:
 
 	cd ..
 	cp src/*.cgi /usr/lib/cgi-bin/
-	cp hc.html /usr/lib/cgi-bin/
-	cp -r images /var/www/html/
+	cp hc.html /var/www/
+	cp -r images /var/www/
 	touch /var/log/haarp/webaccess.log
 	chown www-data:www-data /var/log/haarp/webaccess.log
 	echo "ACCESSWEBLOG /var/log/haarp/webaccess.log" >> /etc/haarp/haarp.conf
