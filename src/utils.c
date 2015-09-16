@@ -97,7 +97,6 @@ char * time_t2date(time_t t, int format_with_sec) {
 	time_t min  = 60;
 	time_t hour = 3600;
 	time_t day  = 24*hour;
-	time_t mon  = 30*day;
 	
 	char *re = (char *)malloc(sizeof(char)*150);
 	char tmp[15];
