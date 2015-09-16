@@ -2,12 +2,12 @@
 	<head>
 		<meta name="Generator" content="HaarpCache View v1.0 - Copyright (C) 2011 - 2012. All rights reserved." />
 		<title>HaarpViewer</title>
-		<link rel="stylesheet" type="text/css" href="../ext/resources/css/ext-all.css">
-		<link rel="stylesheet" type="text/css" href="../ext/resources/css/xtheme-gray.css">
-		<script type="text/javascript"  src="../ext/adapter/ext/ext-base.js"></script>	
-		<script type="text/javascript"  src="../ext/ext-all.js"></script>	
+		<link rel="stylesheet" type="text/css" href="../html/ext/resources/css/ext-all.css">
+		<link rel="stylesheet" type="text/css" href="../html/ext/resources/css/xtheme-gray.css">
+		<script type="text/javascript"  src="../html/ext/adapter/ext/ext-base.js"></script>	
+		<script type="text/javascript"  src="../html/ext/ext-all.js"></script>	
 
-		<script type="text/javascript" src="../ext/src/locale/ext-lang-es.js"></script>
+		<script type="text/javascript" src="../html/ext/src/locale/ext-lang-es.js"></script>
 		<style>
 			.x-grid3-row-over {
 				background-image: none; 
@@ -15,7 +15,7 @@
 			body {
 				padding: 13px;
 				background-color: #FFFFFF;
-				background-image: url(../images/back_general.gif););
+				background-image: url(../html/images/back_general.gif););
 				background-repeat: repeat-x;
 			}
 
@@ -30,30 +30,30 @@
 				background-image:none;
 			}
 			.reload{
-				background: url(../images/action_refresh.gif) 0px 0px no-repeat !important;
+				background: url(../html/images/action_refresh.gif) 0px 0px no-repeat !important;
 			}
 			.reports{		
-				background: url(../images/chart.png) 0px 3px no-repeat !important;
+				background: url(../html/images/chart.png) 0px 3px no-repeat !important;
 			}
 			.storage{
-					background: url(../images/storage.png) 0px 3px no-repeat !important;
+					background: url(../html/images/storage.png) 0px 3px no-repeat !important;
 			}
 			.down1{
-				background: url(../images/down2.png) 0px 0px no-repeat !important;
+				background: url(../html/images/down2.png) 0px 0px no-repeat !important;
 			}
 			.up1{
-				background: url(../images/up2.png) 0px 0px no-repeat !important;
+				background: url(../html/images/up2.png) 0px 0px no-repeat !important;
 			}
 		</style>
         <!-- plugins -->
-        <script type="text/javascript"  src="../ext/examples/ux/TabCloseMenu.js"></script>
-        <script type="text/javascript"  src="../ext/examples/ux/RowEditor.js"></script>
-        <script type="text/javascript"  src="../ext/examples/ux/CheckColumn.js"></script>
-		<script type="text/javascript" src="../ext/examples/ux/ColumnHeaderGroup.js"></script>
-		<script type="text/javascript" src="../ext/examples/ux/fileuploadfield/FileUploadField.js"></script>
-		<script type="text/javascript" src="../ext/examples/ux/GroupSummary.js"></script>
-		<script type="text/javascript" src="../ext/examples/ux/RowExpander.js"></script>
-		<script type="text/javascript" src="../ext/examples/ux/CenterLayout.js"></script>
+        <script type="text/javascript"  src="../html/ext/examples/ux/TabCloseMenu.js"></script>
+        <script type="text/javascript"  src="../html/ext/examples/ux/RowEditor.js"></script>
+        <script type="text/javascript"  src="../html/ext/examples/ux/CheckColumn.js"></script>
+		<script type="text/javascript" src="../html/ext/examples/ux/ColumnHeaderGroup.js"></script>
+		<script type="text/javascript" src="../html/ext/examples/ux/fileuploadfield/FileUploadField.js"></script>
+		<script type="text/javascript" src="../html/ext/examples/ux/GroupSummary.js"></script>
+		<script type="text/javascript" src="../html/ext/examples/ux/RowExpander.js"></script>
+		<script type="text/javascript" src="../html/ext/examples/ux/CenterLayout.js"></script>
 		<script>
 			//~ Fix some problem with browsers!.
 			if (!Ext.isDefined(Ext.webKitVersion)) {
@@ -111,7 +111,7 @@
 				}
 				showIcon = function(data, metadata, record){
 					var str = record.get("domain");
-					return "<img src='../images/" + (str.replace(".","_")).toLowerCase() + ".jpg' width=11 height=11/> " + str;
+					return "<img src='../html/images/" + (str.replace(".","_")).toLowerCase() + ".jpg' width=11 height=11/> " + str;
 				}
 				function ClassHistory(hmin,hmax,data){
 					this.min = hmin;
@@ -188,8 +188,8 @@
 							{header: "Active", width: 10, dataIndex: 'active', align: 'center', /*sortable: true,*/
 									renderer: function(r){
 											if(!r)
-												return "<img src='../images/cancel.png' width=13 height=13>";
-											return '<img src="../images/accept.png" width=13 height=13>';
+												return "<img src='../html/images/cancel.png' width=13 height=13>";
+											return '<img src="../html/images/accept.png" width=13 height=13>';
 									}
 							}
 						]
@@ -431,7 +431,7 @@
 									anchor: '100% 90%',
 									store: storeHis_ts,
 									frame: true,
-									url:'../ext/resources/charts.swf',
+									url:'../html/ext/resources/charts.swf',
 									title: 'Cache',
 									id: 'panel_history_ts',
 									xField: 'date',
@@ -527,16 +527,16 @@
 							{header: " ", width: 15, align: 'center', sortable: false, dataIndex: 'icon'},
 							{header: " ", width: 15, dataIndex: 'difftime', sortable: false, align: 'center', renderer: function (difftime) {
 									if ( difftime <= 60 ) 
-										return '<img src="../images/thunderSendActive.png" width=20 height=20/>';
+										return '<img src="../html/images/thunderSendActive.png" width=20 height=20/>';
 									else 
-										return '<img src="../images/thunderSendDesactive.png" width=20 height=20/>';
+										return '<img src="../html/images/thunderSendDesactive.png" width=20 height=20/>';
 							}},
 							{header: "Users", width: 55, dataIndex: 'users', sortable: false, align: 'left', renderer: function(r, meta, record) {
 								var len = r.length;
 								if ( len ) {
 									if ( len > 1 )
-										return '<img src="../images/users.jpg" height=18/> ' + r[0].name;
-									else return '<img src="../images/user.jpg" height=16/> ' + r[0].name;
+										return '<img src="../html/images/users.jpg" height=18/> ' + r[0].name;
+									else return '<img src="../html/images/user.jpg" height=16/> ' + r[0].name;
 								}
 								return ' ';
 							}},

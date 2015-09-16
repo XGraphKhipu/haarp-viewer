@@ -14,7 +14,8 @@ For ExtJs:
 
 	su
 	apt-get install unzip
-	cd /var/www/
+	mkdir /var/www/html/
+	cd /var/www/html/
 	wget http://extjs.cachefly.net/ext-3.4.0.zip 
 	unzip  ext-3.4.0.zip
 	ln -s ext-3.4.0 ext
@@ -39,9 +40,10 @@ Install HaarpViewer:
 	make
 
 	cd ..
-	cp src/*.cgi /usr/lib/cgi-bin/
-	cp hc.html /var/www/
-	cp -r images /var/www/
+	cp src/*.cgi /usr/lib/cgi-bin/ 2>/dev/null
+	cp src/*.cgi /var/www/cgi-bin/ 2>/dev/null
+	cp hc.html /var/www/html/
+	cp -r images /var/www/html/
 	touch /var/log/haarp/webaccess.log
 	chown www-data:www-data /var/log/haarp/webaccess.log
 	echo "ACCESSWEBLOG /var/log/haarp/webaccess.log" >> /etc/haarp/haarp.conf
