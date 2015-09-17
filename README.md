@@ -36,7 +36,7 @@ Install HaarpViewer:
 
 	cd /usr/src/
 	git clone git://github.com/keikurono/haarp-viewer.git
-	cd haarp-ext-js-viewer
+	cd haarp-viewer
 	cd src/
 	make
 	
