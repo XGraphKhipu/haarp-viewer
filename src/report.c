@@ -357,9 +357,9 @@ int main(){
 		
 		int limitPage, limitPageStart;
 		
-		strncpy(domain, cgi_param("domain"), 100);
-		strncpy(sortField, cgi_param("sort"), 100);
-		strncpy(sortDir, cgi_param("dir"), 10);
+		strcpy(domain, cgi_param("domain"));
+		strcpy(sortField, cgi_param("sort"));
+		strcpy(sortDir, cgi_param("dir"));
 		
 		limitPage = atoi(cgi_param("limitPage"));
 		limitPageStart = atoi(cgi_param("limitPageStart"));
@@ -399,7 +399,6 @@ int main(){
 			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
 			exit(1);
 		}
-		
 		char pet[1000];
 		if( !strstr(domain, "Totales") )
 			sprintf(pet,"SELECT file, domain, size, modified, abs(unix_timestamp(now())-UNIX_TIMESTAMP(modified)) as difftime, bytes_requested/filesize as hits, downloaded, rg, \
@@ -457,8 +456,8 @@ int main(){
 			if(!strlen(extention))
 				strcpy(extention, "unknow.png");
 			
-			printf("%c {id: '%s_%s', modified: '%s', difftime: %s, requested: %s, downloaded: '%s', icon: '<img src=\"../html/images/%s.jpg\" width=20 height=20/>', \
-			filetype: '<img src=\"../html/images/%s\" width=20 height=20/>', file: '%s', rg: '%s', size: %s, deleted: %s, filesize: %s, oldfile: %s, ", \
+			printf("%c {id: '%s_%s', modified: '%s', difftime: %s, requested: %s, downloaded: '%s', icon: '<img src=\"../images/%s.jpg\" width=20 height=20/>', \
+			filetype: '<img src=\"../images/%s\" width=20 height=20/>', file: '%s', rg: '%s', size: %s, deleted: %s, filesize: %s, oldfile: %s, ", \
 			 coma,r[1],r[0],r[3],r[4],r[5],r[6],strtolower(r[1]),extention,r[0],r[7],r[2], r[8], r[9], r[10]);
 			printf("users: [\n");
 			
