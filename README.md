@@ -14,12 +14,13 @@ For ExtJs:
 
 	su
 	apt-get install unzip
-	mkdir /var/www/html/
+	mkdir /var/www/html/ 2>/dev/null
 	cd /var/www/html/
 	wget http://extjs.cachefly.net/ext-3.4.0.zip 
 	unzip  ext-3.4.0.zip
 	ln -s ext-3.4.0 ext
-
+	ln -s html/ext-3.4.0 ../ext
+	
 For LibCGI:
 
 	cd /usr/src
@@ -38,15 +39,20 @@ Install HaarpViewer:
 	cd haarp-ext-js-viewer
 	cd src/
 	make
-
+	
 	cd ..
 	cp src/*.cgi /usr/lib/cgi-bin/ 2>/dev/null
 	cp src/*.cgi /var/www/cgi-bin/ 2>/dev/null
 	cp hc.html /var/www/html/
+	cp hc.html /var/www/ 
 	cp -r images /var/www/html/
+	cp -r images /var/www/
 	touch /var/log/haarp/webaccess.log
 	chown www-data:www-data /var/log/haarp/webaccess.log
 	echo "ACCESSWEBLOG /var/log/haarp/webaccess.log" >> /etc/haarp/haarp.conf
+	
+	a2enmod cgi 2>/dev/null
+	service apache2 restart 2>/dev/null
 
 Access:
 	
