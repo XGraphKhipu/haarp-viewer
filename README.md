@@ -35,12 +35,14 @@ For LibCGI:
 Install HaarpViewer:
 
 	cd /usr/src/
-	git clone git://github.com/keikurono/haarp-ext-js-viewer.git
+	git clone git://github.com/keikurono/haarp-viewer.git
 	cd haarp-ext-js-viewer
 	cd src/
 	make
 	
 	cd ..
+	rm -f /usr/lib/cgi-bin/report.cgi /usr/lib/cgi-bin/haarp.cgi 2>/dev/null
+	rm -f /var/www/cgi-bin/report.cgi /var/www/cgi-bin/haarp.cgi 2>/dev/null
 	cp src/*.cgi /usr/lib/cgi-bin/ 2>/dev/null
 	cp src/*.cgi /var/www/cgi-bin/ 2>/dev/null
 	cp hc.html /var/www/html/
