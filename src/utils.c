@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "logfile.h"
 
+
 void getvarconf(const char *var, char **re)
 {
 	FILE *ft = fopen("/etc/haarp/haarp.conf","r");
@@ -33,18 +34,11 @@ int getActive(const char *domain1)
 	char domain[100];
 	strcpy(domain, domain1);
 	
-	if( strstr(domain,"mediafire") )
-		strcpy(domain, "205\\.196\\.|199\\.91");
-	if( strstr(domain, "fbcdn") )
-		strcpy(domain, "fbcdn");
-	if( strstr(domain, "aol") )
-		strcpy(domain, "avideos");
-	if( strstr(domain, "pornhub") )
-		strcpy(domain, "pornhub");
-	if( strstr(domain, "porntube_vid") )
-		strcpy(domain, "video.{0,5}\\.porntube");
-	if( strstr(domain, "porntube_img") )
-		strcpy(domain, "thumbnails.{0,5}\\.porntube");
+	char *dregex = getDomainRegexlst(domain);
+	
+	if(dregex)
+		strcpy(domain, dregex);
+
 	FILE *ft = fopen("/etc/haarp/haarp.lst","r");
 	if(!ft)
 		exit(1);
@@ -52,7 +46,7 @@ int getActive(const char *domain1)
 	char line[1000];
 	char *l,*t;
 
-	while( fgets(line,1000,ft) )
+	while ( fgets(line,1000,ft) )
 	{
 		t  = strstr(line,"#");
 		if(t)
@@ -62,6 +56,36 @@ int getActive(const char *domain1)
 			return 1;
 	}
 	return 0;
+}
+char * getDomainRegexlst(char *domain) {
+	char * domain2regex[ROW_DOMAIN][COL_DOMAIN] = {
+        	{"mediafire", "205\\.196\\.|199\\.91"},
+      		{"fbcdn", "fbcdn"},
+	        {"aol", "avideos"},
+	        {"pornhub", "pornhub"},
+	        {"porntube_vid", "video.{0,5}\\.porntube"},
+	        {"porntube_img", "thumbnails.{0,5}\\.porntube"},
+	        {"socialpg_dragoncity", "socialpointgames\\.com"},
+	        {"socialpg", "socialpointgames\\.com"},
+	        {"mercadolibre_img", "mlstatic\\.com"},
+        	{"GAMESF_wooga", "wooga\\.com"},
+	        {"GAMESF_popcap", "popcap\\.com"},
+       		{"GAMESF_llnwd", "llnwd\\.net"},
+	        {"GAMESF_cloudfront", "cloudfront\\.net"},
+	        {"GAMESF_amazonaws", "amazonaws\\.com"},
+	        {"GAMESF_akamaihd", "akamaihd\\.net"},
+	        {"FrivIntro", "\\.friv\\.com"} };
+
+	char *d = (char *)malloc(sizeof(char) * 100);
+	memset(d, '\0', 100);
+	int i;
+	for ( i = 0; i < ROW_DOMAIN; i++ ) {
+		if( strstr(domain, domain2regex[i][0]) ) {
+			strcpy(d, domain2regex[i][1]);
+			return d;
+		}
+	}
+	return NULL;
 }
 
 /*

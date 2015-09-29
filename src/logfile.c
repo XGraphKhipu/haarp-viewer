@@ -15,16 +15,16 @@ int logfile_init(char *fl) {
 }
 
 int logerror(char *file, int line, char *format, ...) {
-	char msg_error[200],tim[70];
+	char msg_error[1000],tim[70];
 	
 	FILE *fileloge = fopen(filelog,"a");
 	if(!fileloge) {
-		syslog(LOG_WARNING, "(haarpviewer) %s: file log not open!", file);
+		syslog(LOG_WARNING, "[haarpviewer] file log %s not open!", filelog);
 		return 0;
 	}
 	va_list arg;
 	va_start(arg, format);
-	vsnprintf(msg_error,200,format,arg);
+	vsnprintf(msg_error,1000,format,arg);
 	va_end(arg);
 
 	time_t t = time(NULL);

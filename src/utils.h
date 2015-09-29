@@ -8,6 +8,9 @@
 #include <mysql/mysql.h>
 #include <ctype.h>
 
+#define ROW_DOMAIN 16
+#define COL_DOMAIN 2
+
 
 void getvarconf(const char *var, char **re);
 int getActive(const char *domain1);
@@ -20,4 +23,7 @@ typedef struct dominios{
 	struct dominios *next;
 } ldominios;
 ldominios * getDomainCache(MYSQL *conn);
+
+char * getDomainRegexlst(char *domain);
+
 #endif
