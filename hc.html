@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<meta name="Generator" content="HaarpCache View v1.0 - Copyright (C) 2011 - 2012. All rights reserved." />
+		<meta name="Generator" content="HaarpCache View v1.2 - Copyright (C) 2011 - 2015. All rights reserved." />
 		<title>HaarpViewer</title>
 		<link rel="stylesheet" type="text/css" href="../ext/resources/css/ext-all.css">
 		<link rel="stylesheet" type="text/css" href="../ext/resources/css/xtheme-gray.css">
@@ -111,7 +111,11 @@
 				}
 				showIcon = function(data, metadata, record){
 					var str = record.get("domain");
-					return "<img src='../images/" + (str.replace(".","_")).toLowerCase() + ".jpg' width=11 height=11/> " + str;
+					var active = record.get("active");
+					if(active)
+						return "<img src='../images/" + (str.replace(".","_")).toLowerCase() + ".jpg' width=11 height=11/> " + str;
+					else 
+						return "<img src='../images/generalplugin.png' width=11 height=11/> " + str;
 				}
 				function ClassHistory(hmin,hmax,data){
 					this.min = hmin;
@@ -147,7 +151,7 @@
 							align: 'right'
 						},
 						columns: [
-							new Ext.grid.RowNumberer(),
+							new Ext.grid.RowNumberer({width: 30}),
 							{header: "Domain", width: 40, dataIndex: 'domain', align: 'left', renderer: showIcon},
 							{header: "Files", width: 20, dataIndex: 'files', align: 'right', renderer: Ext.util.Format.numberRenderer('0,0')},
 							{header: "Size", width: 36, dataIndex: 'size',
@@ -321,11 +325,13 @@
 					baseParams: {start : 4 },
 					root: "data",
 					remoteSort: true,
-					fields: ['id', 'modified', 
+					fields: ['id', 'lastmodif', 'domain',
 							{name: 'difftime', type: 'int'},
 							{name: 'requested', type: 'float'}, 
 							'users', 
 							'downloaded', 
+							'expires',
+							{name: 'prob', type: 'float'}, 
 							'icon', 
 							'filetype', 
 							'file', 
@@ -337,9 +343,9 @@
 							{name: 'oldfile', type: 'int'}
 					]
 				});
-				storeLiveHC.setDefaultSort('modified', 'desc');
+				storeLiveHC.setDefaultSort('lastmodif', 'desc');
 				var domain = "Totales";
-				storeLiveHC.baseParams = {start: 4, domain: domain, sort: 'modified', dir: 'DESC'};
+				storeLiveHC.baseParams = {start: 4, domain: domain, sort: 'lastmodif', dir: 'DESC'};
 				
 				tabSouth_ts = new Ext.TabPanel({
 					region: 'south',
@@ -525,6 +531,7 @@
 							new Ext.grid.RowNumberer(),
 							expand,
 							{header: " ", width: 15, align: 'center', sortable: false, dataIndex: 'icon'},
+							{header: "Domain", width: 80, dataIndex: 'domain'},
 							{header: " ", width: 15, dataIndex: 'difftime', sortable: false, align: 'center', renderer: function (difftime) {
 									if ( difftime <= 60 ) 
 										return '<img src="../images/thunderSendActive.png" width=20 height=20/>';
@@ -540,11 +547,17 @@
 								}
 								return ' ';
 							}},
-							{header: "Modified", width: 70, dataIndex: 'modified', align: 'left'},
+							{header: "Modified", width: 75, dataIndex: 'lastmodif', align: 'left'},
 							{header: "Type", width: 15, align: 'center', sortable: false, dataIndex: 'filetype'},											
-							{header: "File Name", width: 130, dataIndex: 'file', align: 'left'},
+							{header: "File Name", width: 260, dataIndex: 'file', align: 'left'},
+							{header: "Expire", width: 75, dataIndex: 'expires', align: 'left', renderer: function(r){
+	if (r == "2050-10-10 00:00:00")
+		return "--.--";
+	return r;
+}},
+							{header: "Probability", width: 50, dataIndex: 'prob', align: 'left'},
 							{header: "Download", width: 40, align: 'right', dataIndex: 'filesize', renderer: Ext.util.Format.fileSize},
-							{header: "Process", width: 64, align: 'center', sortable: false, dataIndex: 'rg',
+							{header: "Progress", width: 64, align: 'center', sortable: false, dataIndex: 'rg',
 								renderer: function (r, meta, record) {
 									var rsplit = r.split(',');
 									var lrsplit = rsplit.length;
@@ -609,7 +622,7 @@
 										domain: domain,
 										limitPage: 50,
 										limitPageStart: 0,
-										sort: 'modified',
+										sort: 'lastmodif',
 										dir: 'DESC'
 									}
 								});
@@ -634,11 +647,11 @@
 											domain: domain,
 											limitPage: 50,
 											limitPageStart: 0,
-											sort: 'modified',
+											sort: 'lastmodif',
 											dir: 'DESC'
 										}
 									});
-									storeLiveHC.baseParams = {start: 4, domain: domain, sort: 'modified', dir: 'DESC'};
+									storeLiveHC.baseParams = {start: 4, domain: domain, sort: 'lastmodif', dir: 'DESC'};
 								}
 							},
 							emptyText: '-- ALL --',
@@ -694,9 +707,9 @@
 				mainPanel = new Ext.Panel({
 					renderTo: 'div1',
 					border: true,
-					width: 1100,
+					width: 1700,
 					height: 750,
-					title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555">HAARPCACHE - VIEW</h1></td></tr></center>',
+					title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555"><img style="margin-left: 5px" src="../imagen/mp3.png" alt="Perufw_" height="36" />HAARPCACHE - VIEW</h1></td></tr></center>',
 					layout: 'border',
 					items: [
 						tabPanelMain
@@ -708,7 +721,7 @@
 						domain: domain,
 						limitPage: 50,
 						limitPageStart: 0,
-						sort: 'modified',
+						sort: 'lastmodif',
 						dir: 'DESC'
 					}
 				});
