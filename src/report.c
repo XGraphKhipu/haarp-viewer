@@ -376,7 +376,7 @@ int main(){
 			exit(1);
 		}
 		if( !strlen(sortField) || !strlen(sortDir) ) {
-			strcpy(sortField, "modified");
+			strcpy(sortField, "lastmodif");
 			strcpy(sortDir, "DESC");
 		}
 		if( strcmp(sortDir, "DESC") && strcmp(sortDir, "ASC") ) {
@@ -400,12 +400,12 @@ int main(){
 			exit(1);
 		}
 		char pet[1000];
-		if( !strstr(domain, "Totales") )
-			sprintf(pet,"SELECT file, domain, size, modified, abs(unix_timestamp(now())-UNIX_TIMESTAMP(modified)) as difftime, bytes_requested/filesize as hits, downloaded, rg, \
-			deleted, filesize, abs(unix_timestamp(now())-UNIX_TIMESTAMP(downloaded)) as oldfile, users FROM haarp WHERE domain='%s' ORDER BY %s %s limit %i,%i", domain, sortField, sortDir, limitPageStart, limitPage);
+		if ( strstr(domain, "Totales") )
+			sprintf(pet,"SELECT file, domain, size, greatest(modified,last_request) as lastmodif, abs(TIMESTAMPDIFF(SECOND,now(),GREATEST(last_request, modified))) as difftime, bytes_requested/filesize as hits, downloaded, rg, \
+			deleted, filesize, abs(TIMESTAMPDIFF(SECOND,now(),downloaded)) as oldfile, users, expires, prob FROM haarp ORDER BY %s %s limit %i,%i", sortField, sortDir, limitPageStart, limitPage);
 		else 
-			sprintf(pet,"SELECT file, domain, size, modified, abs(unix_timestamp(now())-UNIX_TIMESTAMP(modified)) as difftime, bytes_requested/filesize as hits, downloaded, rg, \
-			deleted, filesize, abs(unix_timestamp(now())-UNIX_TIMESTAMP(downloaded)) as oldfile, users FROM haarp ORDER BY %s %s limit %i,%i", sortField, sortDir, limitPageStart, limitPage);
+			sprintf(pet,"SELECT file, domain, size, greatest(modified,last_request) as lastmodif, abs(TIMESTAMPDIFF(SECOND,now(),GREATEST(last_request, modified))) as difftime, bytes_requested/filesize as hits, downloaded, rg, \
+			deleted, filesize, abs(TIMESTAMPDIFF(SECOND,now(),downloaded)) as oldfile, users, expires, prob FROM haarp WHERE domain='%s' ORDER BY %s %s limit %i,%i", domain, sortField, sortDir, limitPageStart, limitPage);
 		if ( mysql_query(connectHaarp,pet) ) {
 			printf("{success: false, errors: 'Error, mysql query'}");
 			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
@@ -439,6 +439,8 @@ int main(){
 				strcpy(extention, "jpg.png");
 			if( strstr(r[0], ".mp4") )
 				strcpy(extention, "mp4.png");
+			if( strstr(r[0], ".mp3") )
+				strcpy(extention, "mp3.png");
 			if( strstr(r[0], ".webm") )
 				strcpy(extention, "webm.png");
 			if( strstr(r[0], ".rar") )
@@ -449,16 +451,26 @@ int main(){
 				strcpy(extention, "tar.png");
 			if( strstr(r[0], ".gzip") )
 				strcpy(extention, "gzip.png");
+			if( strstr(r[0], ".js") )
+				strcpy(extention, "js.png");
+			if( strstr(r[0], ".css") )
+				strcpy(extention, "css.png");
 			if( strstr(r[0], "-aud.flv") )
 				strcpy(extention, "audio.png");
 			if( strstr(r[0], "-vid.flv") || strstr(r[1], "netflix") )
 				strcpy(extention, "video.png");
 			if(!strlen(extention))
 				strcpy(extention, "unknow.png");
-			
-			printf("%c {id: '%s_%s', modified: '%s', difftime: %s, requested: %s, downloaded: '%s', icon: '<img src=\"../images/%s.jpg\" width=20 height=20/>', \
-			filetype: '<img src=\"../images/%s\" width=20 height=20/>', file: '%s', rg: '%s', size: %s, deleted: %s, filesize: %s, oldfile: %s, ", \
-			 coma,r[1],r[0],r[3],r[4],r[5],r[6],strtolower(r[1]),extention,r[0],r[7],r[2], r[8], r[9], r[10]);
+
+			/*double proba;
+			sscanf(r[13],"%lf",&proba);*/
+
+			if( strstr(r[0], "-DELHAARP-") && !strstr(r[1], "netflix") ) 
+				printf("%c {id: '%s_%s', lastmodif: '%s', expires: '%s', prob: %s, difftime: %s, requested: %s, downloaded: '%s', icon: '<img src=\"../images/generalplugin.png\" width=20 height=20/>', \
+				filetype: '<img src=\"../images/%s\" width=20 height=20/>', file: '%s', domain: '%s', rg: '%s', size: %s, deleted: %s, filesize: %s, oldfile: %s, ", coma,r[1],r[0],r[3],r[12],r[13],r[4],r[5],r[6],extention,r[0],r[1],r[7],r[2], r[8], r[9], r[10]);
+			else 
+				printf("%c {id: '%s_%s', lastmodif: '%s', expires: '%s', prob: %s, difftime: %s, requested: %s, downloaded: '%s', icon: '<img src=\"../images/%s.jpg\" width=20 height=20/>', \
+				filetype: '<img src=\"../images/%s\" width=20 height=20/>', file: '%s', domain: '%s', rg: '%s', size: %s, deleted: %s, filesize: %s, oldfile: %s, ", coma,r[1],r[0],r[3],r[12],r[13],r[4],r[5],r[6],strtolower(r[1]),extention,r[0],r[1],r[7],r[2], r[8], r[9], r[10]);
 			printf("users: [\n");
 			
 			int fsize = atoi(r[9]);
