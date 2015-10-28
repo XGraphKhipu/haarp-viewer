@@ -44,6 +44,9 @@
 			.up1{
 				background: url(../images/up2.png) 0px 0px no-repeat !important;
 			}
+			.x-panel-header{
+				border-bottom-color: #BC0404;
+			}
 		</style>
         <!-- plugins -->
         <script type="text/javascript"  src="../ext/examples/ux/TabCloseMenu.js"></script>
@@ -136,6 +139,7 @@
 				var storeTS = new Ext.data.JsonStore({
 					url: "report.cgi",
 					baseParams: {start: 1},
+					totalProperty: 'totalCount',
 					root: "data",
 					autoLoad: true,
 					fields: ['domain','files','size','eco',{name:'hits', type:'float'},'porc', {name: 'active', type:'int'}]
@@ -207,10 +211,26 @@
 							text: 'Reload',
 							iconCls: 'reload',
 							handler: function(){
-								storeTS.load();
+								storeTS.load({
+									params: {
+										limitPage: 50,
+										limitPageStart: 0
+									}
+								});
 							}
 						},'-'
 					],
+					bbar: new Ext.PagingToolbar({
+						pageSize: 50,
+						store: storeTS,
+						displayInfo: true,
+						displayMsg: 'Displaying topics {0} - {1} of {2}',
+						emptyMsg: "No topics to display",
+						paramNames: {
+								start: 'limitPageStart',
+								limit: 'limitPage'
+						}
+					}),
 					listeners: {
 						"rowdblclick": function(g,rowIndex,e){
 							var domain = (g.getStore()).getAt(rowIndex).get("domain");
@@ -709,13 +729,18 @@
 					border: true,
 					width: 1700,
 					height: 750,
-					title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555"><img style="margin-left: 5px" src="../imagen/mp3.png" alt="Perufw_" height="36" />HAARPCACHE - VIEW</h1></td></tr></center>',
+					title: '<table align="center"><tr rowspan=2><td valing="middle"><h1 style="color:#555555"><img src="../images/haarpviewer_logo.png" height="20" /></h1></td></tr></center>',
 					layout: 'border',
 					items: [
 						tabPanelMain
 					]
 				});
-				storeTS.load();
+				storeTS.load({
+					params: {
+						limitPage: 50,
+						limitPageStart: 0,
+					}
+				});
 				storeLiveHC.load({
 					params: {
 						domain: domain,

@@ -57,6 +57,15 @@ int main(){
 	logerror(__FILE__,__LINE__,"Init ");
 	if(start == 1)
 	{
+		int limitpageStart = 0;
+		int limitpage = 50;
+
+		if (cgi_param("limitPageStart") != NULL) {
+			limitpageStart = atoi(cgi_param("limitPageStart"));
+		}
+		if (cgi_param("limitPage") != NULL) {
+			limitpage = atoi(cgi_param("limitPage"));
+		}
 		puts("Content-Type: text/plain");
 		puts("");
 		MYSQL *connect;		
@@ -72,14 +81,14 @@ int main(){
 		long double totalsize = 0;
 		char pet[350];
 		char coma = ' ';
-		strcpy(pet,"select domain,COUNT(*) as files,sum(filesize) as size,sum(bytes_requested) as eco, sum(bytes_requested/filesize) as hits from haarp where deleted=0 and static=0 group by domain order by 1 DESC");	
+		sprintf(pet,"SELECT domain,COUNT(*) as files,sum(filesize) as size,sum(bytes_requested) as eco, sum(bytes_requested/filesize) as hits from haarp where deleted=0 and static=0 group by domain order by 1 DESC limit %i,%i",limitpageStart,limitpage);
 		if(mysql_query(connect, pet))
 		{
 			logerror(__FILE__,__LINE__,"%s",mysql_error(connect));
 			exit(1);
 		}
 		double percent;
-		MYSQL_RES *res = mysql_store_result(connect);		
+		MYSQL_RES *res = mysql_store_result(connect);
 		MYSQL_ROW v;
 		puts("{ data: [");
 		while ( (v = mysql_fetch_row(res)) != NULL ) {
@@ -88,7 +97,7 @@ int main(){
 			}
 			else
 				continue;
-			printf("%c{domain : '%s', files: '%s', size : '%s', eco : '%s', hits : '%s', porc :'%0.2lf', active: '%d'}\n",coma,v[0],v[1],v[2],v[3],v[4],percent,getActive(v[0]));
+			printf("%c{domain : '%s', files: '%s', size : '%s', eco : '%s', hits : '%s', porc :'%0.2lf', active: '%d'}\n",coma,v[0],v[1],v[2],v[3],(v[4]==NULL)?"0":v[4],percent,getActive(v[0]));
 			
 			coma = ',';
 			totaleconomy += atof(v[3]);
@@ -96,10 +105,24 @@ int main(){
 			totalcount += atof(v[1]);
 			totalsize += atof(v[2]);
 		}
+		sprintf(pet,"SELECT domain,COUNT(*) as files,sum(filesize) as size,sum(bytes_requested) as eco, sum(bytes_requested/filesize) as hits, sum(bytes_requested)/sum(filesize)*100 as economy from haarp where deleted=0 and static=0");
+		if ( mysql_query(connect, pet) ) {
+			logerror(__FILE__,__LINE__,"%s",mysql_error(connect));
+			exit(1);
+		}
+		res = mysql_store_result(connect);
+		while ( (v = mysql_fetch_row(res)) != NULL ) {
+			printf("%c{domain : 'Totales', files: '%s', size : '%s', eco : '%s', hits : '%s', porc :'%s', active: '1'}\n",coma,v[1],v[2],v[3],(v[4]==NULL)?"0":v[4],(v[5]==NULL)?"0":v[5]);
+			break;
+		}
+		sprintf(pet, "SELECT COUNT(*) from haarp where deleted=0 and static=0 group by domain");
+		if ( mysql_query(connect, pet) ) {
+			printf("], totalCount: 0}");
+			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connect));
+			exit(1);
+		}
+		printf("], totalCount: %lu}", (unsigned long)mysql_num_rows(mysql_store_result(connect)));
 		mysql_close(connect);
-		printf("%c{domain: 'Totales', files : '%.2Lf', size : '%.2Lf', eco: '%.2Lf', hits : '%.2Lf', porc : '%.2Lf', active: '1' }\n", coma, totalcount, totalsize, totaleconomy, totalhits, (totaleconomy/totalsize)*100.0);	
-		puts("]");
-		puts("}");
 		return 1;
 	}
 	if(start == 2) //history HC, max and min date.
