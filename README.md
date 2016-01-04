@@ -62,6 +62,21 @@ Access:
 
 ## Changelog
 
+__Version 1.1_2__
+
+2016/01/04
+* Fix problem with some icons in the report.
+* Adding functionality of filter by domain search in the report panel.
+* Support for HaarpCache 2.1.2.
+
+__Version 1.1_1__
+
+2015/10/01
+
+* Update logfile format and fix incorrect status in some plugins in the report
+* Update directories for default for a good instalation of the haarp-viewer
+* Adding new icons for a lot of plugins
+
 __Version 1.1__
 
 2015/09/14

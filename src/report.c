@@ -31,7 +31,7 @@
 #include "report.h"
 
 #define charmalloc(a) (char *)malloc(sizeof(char)*a);
-
+#define LOGFL __FILE__,__LINE__
 int main(){
 	cgi_init();
 	cgi_session_start();
@@ -483,7 +483,7 @@ int main(){
 			if( strstr(r[0], "-vid.flv") || strstr(r[1], "netflix") )
 				strcpy(extention, "video.png");
 			if(!strlen(extention))
-				strcpy(extention, "unknow.png");
+				strcpy(extention, "unknown.png");
 
 			/*double proba;
 			sscanf(r[13],"%lf",&proba);*/
@@ -537,26 +537,44 @@ int main(){
 	}
 	if ( start == 5 ) {
 		puts("Content-type: text/plain\n\n");
-		MYSQL * connect = mysql_init(NULL);
+
+                char * domain = cgi_param("query");
+
+                MYSQL * connect = mysql_init(NULL);
 		if(!mysql_real_connect(connect,h,u,p,d,MYSQL_PORT,NULL,0))
-		{
-			logerror(__FILE__,__LINE__,"%s",mysql_error(connect));
-			exit(1);
-		}
-		puts("{data: [{domain: 'Totales'}");
-		ldominios *p = getDomainCache(connect);
-		if(!p) {
-			puts("], totalCount: 1}");
-			return 1;
-		}
-		ldominios *n = p;
-		int tcount = 1; 
-		while ( n != NULL ) {
-			printf(",{domain: '%s'}\n", n->d);
-			++tcount;
-			n = n->next;
-		}
-		printf("], totalCount: %i}", tcount);
+                {
+                        logerror(LOGFL,"%s",mysql_error(connect));
+                        exit(1);
+                }
+                int tcount = 0;
+                if (domain)
+                        puts("{data: [");
+                else {
+                        puts("{data: [{domain: 'Totales'}");
+                        tcount = 1;
+                }
+                ldominios *p = getDomainCache(connect);
+                if(!p) {
+                        printf("], totalCount: %i}", tcount);
+                        return 1;
+                }
+                ldominios *n = p;
+		char coma = ' ';
+                while ( n != NULL ) {
+                        if (domain) {
+                                if (strstr(n->d, domain)) {
+                                        printf("%c{domain: '%s'}\n", coma, n->d);
+                                        ++tcount;
+                                        coma = ',';
+                                }
+                                n = n->next;
+                                continue;
+                        }
+                        printf(",{domain: '%s'}\n", n->d);
+                        ++tcount;
+                        n = n->next;
+                }
+                printf("], totalCount: %i}", tcount);
 	}
 	return 1;
 }
