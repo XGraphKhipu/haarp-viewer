@@ -54,7 +54,7 @@ int main(){
 	
 	logfile_init(fl);
 	
-	logerror(__FILE__,__LINE__,"Init ");
+	logerror(LOGFL,"Init ");
 	if(start == 1)
 	{
 		int limitpageStart = 0;
@@ -72,7 +72,7 @@ int main(){
 		connect = mysql_init(NULL);		
 		if(!mysql_real_connect(connect, h, u, p, d, MYSQL_PORT, NULL, 0))
 		{
-			logerror(__FILE__,__LINE__,"Error Mysql: %s",mysql_error(connect));
+			logerror(LOGFL,"Error Mysql: %s",mysql_error(connect));
 			exit(1);
 		}
 		long double totaleconomy = 0;
@@ -84,7 +84,7 @@ int main(){
 		sprintf(pet,"SELECT domain,COUNT(*) as files,sum(filesize) as size,sum(bytes_requested) as eco, sum(bytes_requested/filesize) as hits from haarp where deleted=0 and static=0 group by domain order by 1 DESC limit %i,%i",limitpageStart,limitpage);
 		if(mysql_query(connect, pet))
 		{
-			logerror(__FILE__,__LINE__,"%s",mysql_error(connect));
+			logerror(LOGFL,"%s",mysql_error(connect));
 			exit(1);
 		}
 		double percent;
@@ -107,7 +107,7 @@ int main(){
 		}
 		sprintf(pet,"SELECT domain,COUNT(*) as files,sum(filesize) as size,sum(bytes_requested) as eco, sum(bytes_requested/filesize) as hits, sum(bytes_requested)/sum(filesize)*100 as economy from haarp where deleted=0 and static=0");
 		if ( mysql_query(connect, pet) ) {
-			logerror(__FILE__,__LINE__,"%s",mysql_error(connect));
+			logerror(LOGFL,"%s",mysql_error(connect));
 			exit(1);
 		}
 		res = mysql_store_result(connect);
@@ -118,7 +118,7 @@ int main(){
 		sprintf(pet, "SELECT COUNT(*) from haarp where deleted=0 and static=0 group by domain");
 		if ( mysql_query(connect, pet) ) {
 			printf("], totalCount: 0}");
-			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connect));
+			logerror(LOGFL,"Error, '%s'.",mysql_error(connect));
 			exit(1);
 		}
 		printf("], totalCount: %lu}", (unsigned long)mysql_num_rows(mysql_store_result(connect)));
@@ -138,7 +138,7 @@ int main(){
 		if(!mysql_real_connect(connect, h, u, p, d, MYSQL_PORT, NULL, 0))
 		{
 			printf("{success: false, errors: \"Error, mysql connect\"}");
-			logerror(__FILE__,__LINE__,"Error Mysql: %s",mysql_error(connect));
+			logerror(LOGFL,"Error Mysql: %s",mysql_error(connect));
 			exit(1);
 		}
 		char pet[200];
@@ -149,7 +149,7 @@ int main(){
 		if(mysql_query(connect,pet))
 		{
 			printf("{success: false, errors: 'Error, mysql connect'}");
-			logerror(__FILE__,__LINE__,"Error Mysql: %s",mysql_error(connect));
+			logerror(LOGFL,"Error Mysql: %s",mysql_error(connect));
 			exit(1);
 		}
 		MYSQL_RES * res = mysql_store_result(connect);		
@@ -168,7 +168,7 @@ int main(){
 		if(!mysql_real_connect(connect, h, u, p, d, MYSQL_PORT, NULL, 0))
 		{
 			printf("{success :false, errors: 'Error, mysql connect'}");
-			logerror(__FILE__,__LINE__,"Error Mysql: %s",mysql_error(connect));
+			logerror(LOGFL,"Error Mysql: %s",mysql_error(connect));
 			exit(1);
 		}
 		int len = strlen(cgi_param("data"));
@@ -188,7 +188,7 @@ int main(){
 		if(mysql_query(connect,pet))
 		{
 			printf("{success: false, errors: 'Error, mysql query'}");
-			logerror(__FILE__,__LINE__,"Error Mysql: %s",mysql_error(connect));
+			logerror(LOGFL,"Error Mysql: %s",mysql_error(connect));
 			exit(1);
 		}		
 		MYSQL_RES *res = mysql_store_result(connect);
@@ -220,7 +220,7 @@ int main(){
 		if(mysql_query(connect,pet))
 		{
 			printf("{success: false, errors: 'Error, mysql query'}");
-			logerror(__FILE__,__LINE__,"Error Mysql: %s",mysql_error(connect));
+			logerror(LOGFL,"Error Mysql: %s",mysql_error(connect));
 			exit(1);
 		}
 		res = mysql_store_result(connect);
@@ -390,12 +390,12 @@ int main(){
 		if(!es_name(domain))
 		{
 			puts("{success: false, errors: 'Error, name domain is incorrect.'}");
-			logerror(__FILE__,__LINE__, "Error, domain name is incorrect: '%s'", domain);
+			logerror(LOGFL, "Error, domain name is incorrect: '%s'", domain);
 			exit(1);
 		}
 		if(!es_name(sortField)) {
 			puts("{success: false, errors: 'Error, name of the \"field sort\" is incorrect.'}");
-			logerror(__FILE__,__LINE__, "Error, 'field sort' name is incorrect: '%s'", sortField);
+			logerror(LOGFL, "Error, 'field sort' name is incorrect: '%s'", sortField);
 			exit(1);
 		}
 		if( !strlen(sortField) || !strlen(sortDir) ) {
@@ -404,7 +404,7 @@ int main(){
 		}
 		if( strcmp(sortDir, "DESC") && strcmp(sortDir, "ASC") ) {
 			puts("{success: false, errors: \"Error, name of the 'sort dir' is incorrect.\"}");
-			logerror(__FILE__,__LINE__, "Error, 'sort dir' name is incorrect: '%s'", sortDir);
+			logerror(LOGFL, "Error, 'sort dir' name is incorrect: '%s'", sortDir);
 			exit(1);
 		}
 
@@ -419,7 +419,7 @@ int main(){
 
 		if(!mysql_real_connect(connectHaarp,h,u,p,d,MYSQL_PORT,NULL,0)) {
 			printf("{success :false, errors: 'Error, mysql connect'}");
-			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
+			logerror(LOGFL,"Error, '%s'.",mysql_error(connectHaarp));
 			exit(1);
 		}
 		char pet[1000];
@@ -431,7 +431,7 @@ int main(){
 			deleted, filesize, abs(TIMESTAMPDIFF(SECOND,now(),downloaded)) as oldfile, users, expires, prob FROM haarp WHERE domain='%s' ORDER BY %s %s limit %i,%i", domain, sortField, sortDir, limitPageStart, limitPage);
 		if ( mysql_query(connectHaarp,pet) ) {
 			printf("{success: false, errors: 'Error, mysql query'}");
-			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
+			logerror(LOGFL,"Error, '%s'.",mysql_error(connectHaarp));
 			exit(1);
 		}
 		puts("{ data: [");
@@ -529,7 +529,7 @@ int main(){
 			
 		if ( mysql_query(connectHaarp, pet) ) {
 			printf("], totalCount: 0}");
-			logerror(__FILE__,__LINE__,"Error, '%s'.",mysql_error(connectHaarp));
+			logerror(LOGFL,"Error, '%s'.",mysql_error(connectHaarp));
 			exit(1);
 		}
 		r = mysql_fetch_row(mysql_store_result(connectHaarp));
