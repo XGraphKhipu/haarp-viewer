@@ -62,14 +62,14 @@ Access:
 
 ## Changelog
 
-__Version 1.1_2__
+__Version 1.1.2__
 
 2016/01/04
 * Fix problem with some icons in the report.
 * Adding functionality of filter by domain search in the report panel.
 * Support for HaarpCache 2.1.2.
 
-__Version 1.1_1__
+__Version 1.1.1__
 
 2015/10/01
 
