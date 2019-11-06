@@ -31,19 +31,9 @@ int main(){
 	cgi_session_start();
 	cgi_init_headers();
 	
-	//if(cgi_session_var_exists("user"))
-	//{
-		cgi_include("/var/www/html/hc.html");
-	/*}
-	else
-	{
-		//puts("<script>alert('Access denied');document.location='index.cgi';</script>");
-		puts("<script>document.location='index.cgi';</script>");
-		//puts("Login fallido, cgi_session_var_exist('user')=0 </br>");
-		//puts(cgi_session_var("admin"));	
-	}	*/
-	cgi_end();
+	cgi_include("/var/www/html/hc.html");
 	
+	cgi_end();	
 	return 1;
 }
 
